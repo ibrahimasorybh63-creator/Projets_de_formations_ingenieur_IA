@@ -21,11 +21,6 @@ class Produit:
         cur = conn.cursor()
         cur.execute("delete from produits where produits_id = ?;",(id,))
         conn.commit()
-    def afficher(self):
-        cur = self.conn.cursor()
-        cur.execute("select * from produits where produits_id = ?;",(self.produits_id,))
-        view = cur.fetchall()
-        return view
     
 class Clients:
     def __init__(self,conn,nom,prenom,adresse=None,clients_id=None):
@@ -49,11 +44,6 @@ class Clients:
         cur = conn.cursor()
         cur.execute("delete from clients where clients_id = ?;",(id,))
         conn.commit()
-    def afficher(self):
-        cur = self.conn.cursor()
-        cur.execute("select * from clients where clients_id = ?;",(self.clients_id,))
-        view = cur.fetchall()
-        return view
 
 class Commandes:
     def __init__(self,conn,date_comm,clients_id,liste_produits,commandes_id=None):
@@ -86,6 +76,18 @@ class Commandes:
         cur.execute(requete,(id,))
         view= cur.fetchall()
         return view,cur
+    @staticmethod
+    def modifier(conn, date_comm, clients_id, id):
+        cur = conn.cursor()
+        cur.execute("update commandes set date_comm = ?, clients_id = ? where commandes_id = ?;", (date_comm, clients_id, id))
+        conn.commit()
+    
+    @staticmethod
+    def supprimer(conn, id):
+        cur = conn.cursor()
+        cur.execute("delete from details_comm where commandes_id = ?;", (id,))
+        cur.execute("delete from commandes where commandes_id = ?;", (id,))
+        conn.commit()
 
 
 def liste_produits(conn):
@@ -93,3 +95,45 @@ def liste_produits(conn):
     cur.execute("select * from produits")
     view = cur.fetchall()
     return view
+def liste_clients(conn):
+    cur = conn.cursor()
+    cur.execute("select * from clients")
+    view = cur.fetchall()
+    return view
+def liste_commandes(conn):
+    cur = conn.cursor()
+    cur.execute("select * from commandes")
+    view = cur.fetchall()
+    return view
+def commandes_detaillees(conn):
+    cur = conn.cursor()
+    requete = """select c.commandes_id, cl.nom, cl.prenom, c.date_comm,
+                        p.nom, p.type_prod, d.quantite, d.prix_unitaire
+                 from commandes as c
+                 join clients as cl on c.clients_id = cl.clients_id
+                 join details_comm as d on d.commandes_id = c.commandes_id
+                 join produits as p on p.produits_id = d.produits_id
+                 order by c.commandes_id;
+              """
+    cur.execute(requete)
+    view = cur.fetchall()
+    return view
+def commandes_groupees(conn):
+    commandes = {}
+    resultat = commandes_detaillees(conn)
+    for ligne in resultat:
+        id_ligne = ligne[0]
+        if id_ligne not in commandes:
+            commandes[id_ligne] = {
+                "nom": ligne[1],
+                "prenom": ligne[2],
+                "date": ligne[3],
+                "produits": []
+            }
+        commandes[id_ligne]["produits"].append({
+            "nom": ligne[4],
+            "type": ligne[5],
+            "quantite": ligne[6],
+            "prix_unitaire": ligne[7]
+        })
+    return commandes

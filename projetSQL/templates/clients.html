@@ -1,0 +1,10 @@
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    {% for client in clients %}
+    <div class="bg-white rounded-lg shadow p-4">
+        <h3 class="text-xl font-bold">{{ client[1] }}</h3>
+        <h3 class="text-xl font-bold">{{ client[2] }}</h3>
+        <p>ID : {{client[0]}} </p>
+        <p class="text-gray-500">adresse : {{ client[3] }}</p>
+      </div>
+    {% endfor %}
+</div>

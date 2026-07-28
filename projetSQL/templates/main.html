@@ -1,0 +1,303 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Simulateur boutique SQL</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body>
+    <div class="container mx-auto">
+      <div class="flex flex-wrap justify-center bg-red-500 text-center">
+        <h1 class="text-white text-4xl font-bold">
+          <a href="/">Simulateur de boutique SQL</a>
+        </h1>
+      </div>
+      <div class="flex flex-wrap">
+        <div class="bg-blue-500 w-1/4 gap-5 divide-y min-h-screen text-white">
+          <div class="text-white p-5">
+            <h2 class="text-3xl font-bold" style="text-align: center">
+              Espace admin
+            </h2>
+          </div>
+          <div class="gap-5 p-1">
+            <details>
+              <summary>Clients</summary>
+              <button
+                onclick="chargerContenu('/clients')"
+                class="block hover:text-black hover:border-2 hover:bg-green-500 hover:rounded"
+              >
+                Catalogue des clients
+              </button>
+              <button
+                onclick="afficher('form_ajout_client')"
+                class="block hover:text-black hover:border-2 hover:bg-blue-500 hover:rounded"
+              >
+                Ajouter un client
+              </button>
+              <button
+                onclick="afficher('form_modifier_client')"
+                class="block hover:text-black hover:border-2 hover:bg-blue-500 hover:rounded"
+              >
+                Modifier client existant
+              </button>
+              <button
+                onclick="afficher('form_supprimer_client')"
+                class="block hover:text-black hover:border-2 hover:bg-red-500 hover:rounded"
+              >
+                Supprimer un client
+              </button>
+            </details>
+          </div>
+          <div class="gap-5 p-1">
+            <details>
+              <summary>Produits</summary>
+              <button
+                onclick="chargerContenu('/produits')"
+                class="block hover:text-black hover:border-2 hover:bg-green-500 hover:rounded"
+              >
+                Catalogue des produits
+              </button>
+              <button
+                onclick="afficher('form_ajout_produit')"
+                class="block hover:text-black hover:border-2 hover:bg-blue-500 hover:rounded"
+              >
+                Ajouter un produit
+              </button>
+              <button
+                onclick="afficher('form_modifier_produit')"
+                class="block hover:text-black hover:border-2 hover:bg-blue-500 hover:rounded"
+              >
+                Modifier produit existant
+              </button>
+              <button
+                onclick="afficher('form_supprimer_produit')"
+                class="block hover:text-black hover:border-2 hover:bg-red-500 hover:rounded"
+              >
+                Supprimer un produit
+              </button>
+            </details>
+          </div>
+          <div class="gap-5 p-1">
+            <details>
+              <summary>Commandes</summary>
+              <button
+                onclick="chargerContenu('/commandes')"
+                class="block hover:text-black hover:border-2 hover:bg-green-500 hover:rounded"
+              >
+                Catalogue des commandes
+              </button>
+              <button
+                onclick="afficher('form_ajout_commande')"
+                class="block hover:text-black hover:border-2 hover:bg-blue-500 hover:rounded"
+              >
+                Ajouter une commande
+              </button>
+              <button
+                onclick="afficher('form_modifier_commande')"
+                class="block hover:text-black hover:border-2 hover:bg-blue-500 hover:rounded"
+              >
+                Modifier une commande
+              </button>
+              <button
+                onclick="afficher('form_supprimer_commande')"
+                class="block hover:text-black hover:border-2 hover:bg-red-500 hover:rounded"
+              >
+                Supprimer une commande
+              </button>
+            </details>
+          </div>
+        </div>
+        <!--- debut de la partie droite -->
+        <div class="w-3/4 p-5 justify-center">
+          <div class="flex flex-wrap" id="texte_accueil">
+            <h1 class="text-4xl font-bold ">
+              Bienvenu sur le simulateur de boutique SQL
+            </h1>
+          </div>
+          <div class="flex flex-wrap items-center w-2/3 p-5">
+            <div id="zone_catalogue"></div>
+            <div id="zone_formulaires">
+              <!-- partie droite -->
+              <!-- ===== PRODUITS ===== -->
+              <div
+                id="form_ajout_produit"
+                class="border-2 rounded p-4"
+                style="display: none"
+              >
+                <form action="/produits/ajouter" method="post">
+                  <input type="text" placeholder="nom" name="nom" />
+                  <input type="number" placeholder="prix" name="prix" />
+                  <input type="text" placeholder="type" name="type_prod" />
+                  <input type="submit" value="Ajouter" />
+                </form>
+              </div>
+
+              <div
+                id="form_modifier_produit"
+                class="border rounded p-4"
+                style="display: none"
+              >
+                <form action="/produits/modifier" method="post">
+                  <input
+                    type="number"
+                    placeholder="id du produit"
+                    name="produits_id"
+                  />
+                  <input type="number" placeholder="nouveau prix" name="prix" />
+                  <input type="submit" value="Modifier" />
+                </form>
+              </div>
+
+              <div
+                id="form_supprimer_produit"
+                class="border rounded p-4"
+                style="display: none"
+              >
+                <form action="/produits/supprimer" method="post">
+                  <input
+                    type="number"
+                    placeholder="id du produit"
+                    name="produits_id"
+                  />
+                  <input type="submit" value="Supprimer" />
+                </form>
+              </div>
+
+              <!-- ===== CLIENTS ===== -->
+              <div
+                id="form_ajout_client"
+                class="border rounded p-4"
+                style="display: none"
+              >
+                <form action="/clients/ajouter" method="post">
+                  <input type="text" placeholder="nom" name="nom" />
+                  <input type="text" placeholder="prénom" name="prenom" />
+                  <input type="text" placeholder="adresse" name="adresse" />
+                  <input type="submit" value="Ajouter" />
+                </form>
+              </div>
+
+              <div
+                id="form_modifier_client"
+                class="border rounded p-4"
+                style="display: none"
+              >
+                <form action="/clients/modifier" method="post">
+                  <input
+                    type="number"
+                    placeholder="id du client"
+                    name="clients_id"
+                  />
+                  <input type="text" placeholder="nom" name="nom" />
+                  <input type="text" placeholder="prénom" name="prenom" />
+                  <input type="text" placeholder="adresse" name="adresse" />
+                  <input type="submit" value="Modifier" />
+                </form>
+              </div>
+
+              <div
+                id="form_supprimer_client"
+                class="border rounded p-4"
+                style="display: none"
+              >
+                <form action="/clients/supprimer" method="post">
+                  <input
+                    type="number"
+                    placeholder="id du client"
+                    name="clients_id"
+                  />
+                  <input type="submit" value="Supprimer" />
+                </form>
+              </div>
+
+              <!-- ===== COMMANDES ===== -->
+              <div
+                id="form_ajout_commande"
+                class="border rounded p-4"
+                style="display: none"
+              >
+                <form action="/commandes/ajouter" method="post">
+                  <input
+                    type="number"
+                    placeholder="id du client"
+                    name="clients_id"
+                    required
+                  />
+                  <input type="date" name="date_comm" required />
+                  <div id="lignes_produits">
+                    <div class="ligne_produit">
+                      <input
+                        type="number"
+                        placeholder="id produit"
+                        name="produits_id[]"
+                        required
+                      />
+                      <input
+                        type="number"
+                        placeholder="quantité"
+                        name="quantite[]"
+                        required
+                      />
+                    </div>
+                  </div>
+                  <br>
+                  <button type="button" id="btn_ajouter_ligne" class="rounded border hover:bg-blue-500">
+                    + Ajouter un produit
+                  </button>
+                  <br><br>
+                  <input type="submit" value="Enregistrer la commande" class="rounded border hover:bg-green-500"/>
+                </form>
+              </div>
+
+              <div
+                id="form_modifier_commande"
+                class="border rounded p-4"
+                style="display: none"
+              >
+                <form action="/commandes/modifier" method="post">
+                  <input
+                    type="number"
+                    placeholder="id de la commande"
+                    name="commandes_id"
+                    required
+                  />
+                  <input
+                    type="date"
+                    placeholder="nouvelle date"
+                    name="date_comm"
+                    required
+                  />
+                  <input
+                    type="number"
+                    placeholder="nouvel id client"
+                    name="clients_id"
+                    required
+                  />
+                  <input type="submit" value="Modifier" />
+                </form>
+              </div>
+
+              <div
+                id="form_supprimer_commande"
+                class="border rounded p-4"
+                style="display: none"
+              >
+                <form action="/commandes/supprimer" method="post">
+                  <input
+                    type="number"
+                    placeholder="id de la commande"
+                    name="commandes_id"
+                    required
+                  />
+                  <input type="submit" value="Supprimer" />
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
+</html>
