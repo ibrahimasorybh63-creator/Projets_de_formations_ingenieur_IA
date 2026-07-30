@@ -1,8 +1,8 @@
 const toutesLesZones = [
-    "zone_catalogue",
+    "zone_catalogue","zone_dashboard",
     "form_ajout_produit", "form_modifier_produit", "form_supprimer_produit",
     "form_ajout_client", "form_modifier_client", "form_supprimer_client",
-    "form_ajout_commande", "form_modifier_commande", "form_supprimer_commande","texte_accueil"
+    "form_ajout_commande", "form_modifier_commande", "form_supprimer_commande",
 ];
 
 function cacherTout() {
@@ -44,7 +44,7 @@ function interceptFormulaire(formId) {
 [
     "form_ajout_produit", "form_modifier_produit", "form_supprimer_produit",
     "form_ajout_client", "form_modifier_client", "form_supprimer_client",
-    "form_ajout_commande", "form_modifier_commande", "form_supprimer_commande"
+    "form_ajout_commande", "form_modifier_commande", "form_supprimer_commande",
 ].forEach(interceptFormulaire);
 const btnAjouter = document.getElementById("btn_ajouter_ligne");
 const lignesProduits = document.getElementById("lignes_produits");

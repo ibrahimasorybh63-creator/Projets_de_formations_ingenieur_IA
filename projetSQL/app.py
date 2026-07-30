@@ -9,9 +9,19 @@ def get_conn():
     conn.execute("PRAGMA foreign_keys = ON;")
     return conn
 
-@app.get("/")
-def afficher_accueil():
-    return render_template("main.html")
+@app.route("/")
+def accueil():
+    conn = get_conn()
+    stats = entite.get_stats(conn)
+    produits_top = entite.produits_les_plus_achetes(conn)
+    conn.close()
+    
+    # On sépare juste noms et quantités pour les passer au template
+    noms_produits = [p[0] for p in produits_top]
+    quantites = [p[1] for p in produits_top]
+    
+    return render_template("main.html", stats=stats, 
+                            noms_produits=noms_produits, quantites=quantites)
 
 @app.route("/produits")
 def produits():

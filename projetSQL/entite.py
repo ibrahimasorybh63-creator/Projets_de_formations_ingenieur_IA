@@ -137,3 +137,25 @@ def commandes_groupees(conn):
             "prix_unitaire": ligne[7]
         })
     return commandes
+def get_stats(conn):
+    cur = conn.cursor()
+    nb_clients = cur.execute("SELECT COUNT(*) FROM clients").fetchone()[0]
+    nb_produits = cur.execute("SELECT COUNT(*) FROM produits").fetchone()[0]
+    nb_commandes = cur.execute("SELECT COUNT(*) FROM commandes").fetchone()[0]
+    ca_total = cur.execute("SELECT SUM(quantite * prix_unitaire) FROM details_comm").fetchone()[0] or 0
+    return {
+        "nb_clients": nb_clients,
+        "nb_produits": nb_produits,
+        "nb_commandes": nb_commandes,
+        "ca_total": ca_total
+    }
+def produits_les_plus_achetes(conn):
+    cur = conn.cursor()
+    resultat = cur.execute("""
+        SELECT p.nom, SUM(d.quantite) as total_vendu
+        FROM details_comm d
+        JOIN produits p ON p.produits_id = d.produits_id
+        GROUP BY p.produits_id
+        ORDER BY total_vendu DESC
+    """).fetchall()
+    return resultat
