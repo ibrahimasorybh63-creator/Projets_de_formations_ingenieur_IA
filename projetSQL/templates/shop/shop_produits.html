@@ -1,0 +1,26 @@
+<div style="width: 100%; height: 100%">
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
+    {% for produit in produits %} 
+    <div class="bg-white rounded-lg shadow p-5 hover:bg-blue-100 transition duration-300 hover: transform hover:scale-105 cursor-pointer">
+      <img src="{{ produit.image_url }}" alt="{{ produit.nom }}" class="w-full h-40 object-cover"/>
+      <h3 class="text-xl font-bold">{{ produit.nom }}</h3>
+      <p class="text-gray-500">Type : {{ produit.type }}</p>
+      {% if produit.prix_promo == None%}
+      <p class="text-green-600 font-semibold">{{ produit.prix }} GNF</p>
+      {% else %}
+      <div class="flex flex-wrap gap-2">
+          <s class="text-red-500 font-semibold ">{{ produit.prix }} GNF</s>
+          <p class="text-green-600">{{ produit.prix_promo }} GNF</p>
+      </div>
+      {% endif %}
+      <details>
+          <summary class="bg-green-400 rounded p-1 cursor-pointer inline-block">Ajouter au panier</summary>
+          <div class="mt-2">
+              <input type="number" min="1" value="1" id="quantite_{{ produit.id }}" class="border w-1/2">
+              <button class="bg-blue-500 rounded p-1" onclick="ajouterAuPanier(`{{produit.id}}`)">Valider</button>
+          </div>
+      </details>
+    </div>
+    {% endfor %}
+  </div>
+</div>

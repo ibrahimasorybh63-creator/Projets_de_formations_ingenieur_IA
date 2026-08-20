@@ -13,6 +13,7 @@ function afficher(id) {
     cacherTout();
     document.getElementById(id).style.display = "block";
 }
+
 function chargerContenu(url) {
     cacherTout();
     fetch(url)
@@ -22,6 +23,7 @@ function chargerContenu(url) {
             document.getElementById("zone_catalogue").style.display = "block";
         });
 }
+
 function interceptFormulaire(formId) {
     const conteneur = document.getElementById(formId);
     if (!conteneur) return;
@@ -49,42 +51,25 @@ function interceptFormulaire(formId) {
     "form_modifier_client", "form_supprimer_client",
     "form_ajout_commande","form_supprimer_commande"
 ].forEach(interceptFormulaire);
+
 const btnAjouter = document.getElementById("btn_ajouter_ligne");
 const lignesProduits = document.getElementById("lignes_produits");
-document.querySelectorAll('.ligne_produit .supprimer').forEach(bouton => {
-    bouton.addEventListener('click', () => {
-        bouton.closest('.ligne_produit').remove();
-    });
-});
 
 if (btnAjouter && lignesProduits) {
     btnAjouter.addEventListener("click", () => {
         const ligne = document.createElement("div");
-    ligne.className = "ligne_produit";
+        ligne.className = "ligne_produit";
 
-    ligne.innerHTML = `
-        <input
-            type="number"
-            placeholder="id produit"
-            name="produits_id[]"
-            class="border-2 border-black rounded m-1"
-            required
-        />
-        <input
-            type="number"
-            placeholder="quantité"
-            name="quantite[]"
-            class="border-2 border-black rounded m-1"
-            required
-        />
-        <button type="button" class="supprimer">❌</button>
-    `;
+        ligne.innerHTML = `
+            <input type="number" min='1' placeholder="id produit" class="border-2 border-black rounded m-1" name="produits_id[]" required />
+            <input type="number" min='1' placeholder="quantité" class="border-2 border-black rounded m-1" name="quantite[]" required />
+            <button type="button" class="supprimer">❌</button>
+        `;
 
-    ligne.querySelector(".supprimer").addEventListener("click", () => {
-        ligne.remove();
-    });
+        ligne.querySelector(".supprimer").addEventListener("click", () => {
+            ligne.remove();
+        });
 
-    lignesProduits.appendChild(ligne);
+        lignesProduits.appendChild(ligne);
     });
 }
-    

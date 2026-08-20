@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Boutique en ligne SQL</title>
+  </head>
+  <body
+    class="min-h-screen bg-cover bg-center bg-fixed"
+    style="
+      background-image:
+        linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.521)),
+        url(&quot;https://vulplex.com/images/featured/Realistic-WideAngle-Messy-Grocery-Store-Aisle-with-Packed-Shelves-Wallpaper-69da672342485.jpg&quot;);
+    "
+  >
+    <header>
+      <!-- Barre de navigation -->
+      <div class="flex flext-wrap gap-3 bg-gray-500">
+        <div class="p-5">
+          <img
+            src="{{ url_for('static', filename='img/logo.png') }}"
+            alt="logo de la Boutique"
+            class="w-40 h-20 text-start"
+          />
+        </div>
+        <button
+          class="w-1/4 bg-white hover:bg-blue-500 rounded border h-1/2 m-10"
+          onclick="(activerModeCatalogue(), afficherTout(), filtre_off())"
+        >
+          Accueil
+        </button>
+        <button
+          class="w-1/4 bg-white hover:bg-blue-500 rounded border h-1/2 m-10"
+          onclick="(activerModeCatalogue(), cacherTout(), filtre_on())"
+        >
+          Produits
+        </button>
+        <button
+          class="w-1/4 bg-white hover:bg-blue-500 rounded border h-1/2 m-10"
+          onclick="(activerModePromo(), cacherTout(), filtre_on())"
+        >
+          Promotions
+        </button>
+        <button
+          class="w-1/4 bg-white hover:bg-blue-500 rounded border h-1/2 m-10"
+          onclick="
+            (chargerCont_shop('/shop_contact'),
+              cacherTout(),
+              filtre_off(),
+              cacher_barre())
+          "
+        >
+          Contact
+        </button>
+        <div class="me-5">
+          <a
+            href="/shop_panier"
+            class="hover:bg-blue-500 rounded bg-white p-2 mt-5 relative flex flex-col items-center"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+              class="size-6 m-2"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.993 1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 0 1-1.12-1.243l1.264-12A1.125 1.125 0 0 1 5.513 7.5h12.974c.576 0 1.059.435 1.119 1.007ZM8.625 10.5a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm7.5 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z"
+              />
+            </svg>
+            <span
+              id="compteur_panier"
+              class="absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center animate-pulse {% if long_panier == 0 %}hidden{% endif %}"
+              >{{ long_panier }}</span
+            >
+            <p class="text-center">Panier</p>
+          </a>
+        </div>
+      </div>
+      <div id="zone_recherche" class="flex flext-wrap gap-10 mt-5">
+        <div class="w-1/4"></div>
+        <div class="w-2/4 justify-center">
+          <input
+            type="text"
+            placeholder="Rechercher un produit..."
+            name="Rechercher"
+            class="border w-5/6 text-center"
+            id="barre_recherche"
+          />
+          <input
+            type="submit"
+            value="Rechercher"
+            class="border-2 rounded bg-blue-500"
+          />
+        </div>
+        <div class="w-1/4"></div>
+      </div>
+    </header>
+    <main>
+      <!-- contenue de la page -->
+      <div id="zone_haut_vitrine">
+        <div class="flex flext-wrap text-center justify-center">
+          <img
+            src="{{ url_for('static', filename='img/soldes.jpg') }}"
+            alt="image de soldes"
+            class="p-5 w-1/3 h-40"
+          />
+        </div>
+        <h2 class="text-center text-4xl p-5">
+          Découvrez les produits de la Boutique
+        </h2>
+        <p class="text-center text-2xl p-5">
+          Plus de 100 articles à votre disposition
+        </p>
+      </div>
+      <div class="flex justify-end" id="zone_filtre" style="display: none">
+        <select
+          name="filtre_categorie"
+          id="filtre_categorie"
+          class="border-2 rounded m-5 border-black"
+        >
+          <option value="" selected>Toutes les catégories</option>
+          <option value="Alimentaire">Alimentaire</option>
+          <option value="Hygiène">Hygiène</option>
+          <option value="Papeterie">Papeterie</option>
+          <option value="Électronique">Électronique</option>
+          <option value="Boisson">Boisson</option>
+        </select>
+      </div>
+      <div
+        id="zone_toast"
+        class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 flex flex-col gap-2"
+      ></div>
+      <div class="flex flex-wrap">
+        <div class="w-1/5"></div>
+        <div id="zone_catalogue" class="w-3/5 mt-5"></div>
+        <div class="w-1/5"></div>
+      </div>
+    </main>
+    <footer class="bg-gray-500 mt-5 p-5">
+      <div class="flex flex-wrap justify-between">
+        <div class="flex flex-col gap-2">
+          <button
+            onclick="(activerModeCatalogue(), afficherTout(), filtre_off())"
+            class="text-blue-300 hover:text-white text-start"
+          >
+            Accueil
+          </button>
+          <button
+            onclick="(activerModeCatalogue(), cacherTout(), filtre_on())"
+            class="text-blue-300 hover:text-white text-start"
+          >
+            Produits
+          </button>
+          <button
+            onclick="(activerModePromo(), cacherTout(), filtre_on())"
+            class="text-blue-300 hover:text-white text-start"
+          >
+            Promotions
+          </button>
+          <a
+            onclick="
+              (chargerCont_shop('/shop_contact'),
+                cacherTout(),
+                filtre_off(),
+                cacher_barre())
+            "
+            class="text-blue-300 hover:text-white text-start"
+            >Contact</a
+          >
+        </div>
+        <div class="flex flex-col gap-2 text-white">
+          <p>
+            © 2026 Boutique SQL — Projet formation ingénieur IA. Tous droits
+            réservés.
+          </p>
+          <a
+            href="mailto:ibrahimasorybh63@gmail.com"
+            class="text-blue-300 hover:text-white"
+            >Contactez-nous</a
+          >
+        </div>
+      </div>
+    </footer>
+  </body>
+  <script src="{{ url_for('static', filename='shop_script.js') }}"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      chargerCont_shop("/shop_vitrine");
+    });
+  </script>
+</html>

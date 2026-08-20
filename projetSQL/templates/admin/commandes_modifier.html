@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Modification produit</title>
+  </head>
+  <body>
+    <h1 class="text-center text-4xl font-bold p-5">Modification de produit</h1>
+    <div
+      class="flex flex-wrap text-center justify-center p-5"
+      id="form_modifier_produit"
+    >
+      <form action="/commandes/modifier" method="post">
+        <input
+          class="border-2 border-black rounded m-1"
+          type="hidden"
+          name="id"
+          value="{{ commande_id }}"
+        />
+        <label>Identifiant du client </label>
+        <input
+          class="border-2 border-black rounded m-1"
+          type="number"
+          min="1"
+          name="clients_id"
+          value="{{ commandes.client_id }}"
+          required
+        />
+        <input
+          class="border-2 border-black rounded m-1"
+          type="date"
+          name="date_comm"
+          value="{{ commandes.date }}"
+          required
+        />
+
+        <div id="lignes_produits">
+          {% for produit in commandes.produits %}
+          <div class="ligne_produit">
+            <label>Identifiant du produit ({{produit.nom}})</label>
+            <input
+              class="border-2 border-black rounded m-1"
+              type="number"
+              min="1"
+              name="produits_id[]"
+              value="{{ produit.produit_id }}"
+              required
+            />
+
+            <label>Quantite du produit </label>
+            <input
+              class="border-2 border-black rounded m-1"
+              type="number"
+              min="1"
+              name="quantite[]"
+              value="{{ produit.quantite }}"
+              required
+            />
+            <button type="button" class="supprimer">❌</button>
+          </div>
+          {% endfor %}
+        </div>
+
+        <button
+          class="border-2 border-black rounded bg-gray-200 p-1"
+          type="button"
+          id="btn_ajouter_ligne"
+        >
+          + Ajouter un produit
+        </button>
+        <input
+          class="border-2 border-black rounded m-1"
+          type="submit"
+          value="Enregistrer les modifications"
+        />
+      </form>
+    </div>
+  </body>
+  <script src="{{ url_for('static', filename='admin_commande_modifier.js') }}"></script>
+</html>

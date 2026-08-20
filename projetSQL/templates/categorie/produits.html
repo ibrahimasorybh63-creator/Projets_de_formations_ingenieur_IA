@@ -1,0 +1,15 @@
+<div>
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-5 w-full justify-center">
+    {% for produit in produits %}
+    <div
+      class="bg-white rounded-lg shadow p-4 hover:bg-blue-100 transition duration-300 hover: transform hover:scale-105 cursor-pointer"
+    >
+      <h3 class="text-xl font-bold">{{ produit[1] }}</h3>
+      <p>ID : {{produit[0]}}</p>
+      <p class="text-gray-500">Type : {{ produit[3] }}</p>
+      <p class="text-green-600 font-semibold">{{ produit[2] }} GNF</p>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+<script src="https://cdn.tailwindcss.com"></script>

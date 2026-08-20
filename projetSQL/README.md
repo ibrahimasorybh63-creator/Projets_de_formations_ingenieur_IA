@@ -1,21 +1,23 @@
 # ProjetSQL — Gestion de Boutique (Flask + SQLite)
 
-Application web de gestion d'une boutique (produits, clients, commandes), construite avec **Flask** et **SQLite**, avec un tableau de bord affichant des statistiques de vente.
+Application web de gestion d'une boutique (produits, clients, commandes), construite avec **Flask** et **SQLite**. Comprend une interface **admin** (tableau de bord, gestion CRUD) et une interface **client** (boutique publique avec panier et commande).
 
 ## Contenu
 
-- `schema.sql` — définition des 4 tables : `clients`, `produits`, `commandes`, `details_comm` (table de jonction avec clé primaire composite), avec clés étrangères en cascade.
-- `seed.py` — remplit la base `boutique.db` avec un jeu de données de démonstration (20 produits répartis en 5 catégories, 15 clients basés en Guinée).
-- `entite.py` — classes `Produit`, `Clients`, `Commandes` : CRUD complet (ajout, modification, suppression), plus des fonctions utilitaires pour lister les données, calculer les statistiques globales (`get_stats`) et déterminer les produits les plus achetés.
-- `app.py` — application Flask : routes pour l'accueil (tableau de bord), la gestion des produits, des clients et des commandes (ajout, modification, suppression), avec rendu de templates Jinja2.
-- `templates/` — pages HTML (dont `main.html`, le tableau de bord).
-- `static/` — fichiers JS et images du frontend.
+- `schema.sql` — définition des 4 tables : `clients` (avec authentification : `email`, `mdp_hash`), `produits` (avec `prix_promo` optionnel), `commandes`, `details_comm` (table de jonction avec clé primaire composite), avec clés étrangères en cascade.
+- `seed.py` — remplit la base `boutique.db` avec un jeu de données de démonstration (produits répartis en 5 catégories, clients avec mots de passe hashés).
+- `entite.py` — classes `Produit`, `Clients` (inscription, connexion avec hash bcrypt), `Commandes` : CRUD complet, plus des fonctions utilitaires (statistiques, produits les plus achetés, commandes groupées avec total).
+- `app.py` — application Flask :
+  - **Admin** : tableau de bord, gestion des produits/clients/commandes, protégé par authentification (`@app.before_request`)
+  - **Client** : catalogue filtrable, panier, inscription/connexion, validation de commande
+- `templates/` — pages HTML (admin et boutique).
+- `static/` — fichiers JS (séparés par page) et images du frontend.
 
 ## Installation et lancement
 
 ```bash
 cd projetSQL
-pip install flask
+pip install flask werkzeug
 
 # Créer la base à partir du schéma (une seule fois)
 sqlite3 boutique.db < schema.sql
@@ -31,16 +33,27 @@ L'application sera accessible sur `http://127.0.0.1:5000`.
 
 ## Fonctionnalités
 
-- Tableau de bord : nombre de clients, produits, commandes, chiffre d'affaires total, produits les plus vendus.
-- Gestion des produits : liste, ajout, modification du prix, suppression.
-- Gestion des clients : liste, ajout, modification, suppression.
-- Gestion des commandes : création (avec plusieurs produits et quantités), modification, suppression, affichage groupé par commande.
+**Côté admin** (accès protégé par connexion) :
+
+- Tableau de bord : statistiques de vente, produits les plus vendus.
+- Gestion des produits : liste, modification, suppression.
+- Gestion des clients : liste, modification, suppression (création réservée à l'inscription client).
+- Gestion des commandes : création, modification (lignes produits dynamiques, prix promo pris en compte, total affiché), suppression.
+
+**Côté client** :
+
+- Inscription et connexion (mot de passe hashé, session sécurisée).
+- Catalogue filtrable (catégorie, recherche, promotions).
+- Panier : ajout, modification de quantité, suppression.
+- Validation de commande (connexion requise).
 
 ## Concepts mis en œuvre
 
-- SQL : jointures multi-tables, clés étrangères (`PRAGMA foreign_keys`), requêtes paramétrées.
-- Python : classes avec méthodes d'instance et méthodes statiques, connexion/curseur SQLite.
-- Flask : routage GET/POST, formulaires, redirections, templates Jinja2.
+- SQL : jointures multi-tables, clés étrangères (`PRAGMA foreign_keys`), requêtes paramétrées, contraintes `UNIQUE`/`NOT NULL`.
+- Python : classes avec méthodes d'instance et méthodes statiques, connexion SQLite par requête.
+- Sécurité : hash de mot de passe (`werkzeug.security`), messages d'erreur génériques anti-énumération, protection des routes sensibles.
+- Flask : routage GET/POST, sessions, JSON (API AJAX), redirections, templates Jinja2.
+- Frontend : JavaScript vanilla (`fetch`/`async`), manipulation du DOM, Tailwind CSS.
 
 ## Auteur
 

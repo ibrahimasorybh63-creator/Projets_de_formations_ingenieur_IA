@@ -2,13 +2,16 @@ create table clients(
     clients_id integer primary key AUTOINCREMENT,
     nom varchar(20) not null,
     prenom varchar(30) not null,
-    adresse varchar(30)
+    adresse varchar(30),
+    email varchar(100) unique not null,
+    mdp_hash varchar(60) not null
 );
 create table produits(
     produits_id integer primary key AUTOINCREMENT,
     nom varchar(30) not null,
     prix integer not null,
-    type_prod varchar(30) not null
+    type_prod varchar(30) not null,
+    prix_promo integer
 );
 create table commandes(
     commandes_id integer primary key AUTOINCREMENT,
