@@ -55,17 +55,19 @@
             <p>
               En parallèle de mon apprentissage, j'accompagne d'autres étudiants à travers le tutorat et les activités du club informatique de BEM. 
               Enseigner me pousse à approfondir mes connaissances et à développer une compréhension plus solide des concepts que je partage.
+              Mon stage m'a permis de découvrir concrètement l'environnement professionnel de l'informatique, notamment à travers les domaines du développement, des infrastructures et du cloud. Cette expérience a renforcé mon intérêt pour la conception de solutions informatiques répondant à des besoins réels.
+
             </p>
           </div>
           <div class="col-md-6">
             <h5 class="mb-3">Certifications</h5>
-            <ul class="list-unstyled">
-              <li class="mb-2"><span aria-hidden="true">🐍</span> Python — intermédiaire (SoloLearn)</li>
-              <li class="mb-2"><span aria-hidden="true">🗃️</span> SQL — intermédiaire (SoloLearn)</li>
-              <li class="mb-2"><span aria-hidden="true">🌐</span> HTML — intermédiaire (SoloLearn)</li>
-              <li class="mb-2"><span aria-hidden="true">🎨</span> CSS — débutant (SoloLearn)</li>
-              <li class="mb-2"><span aria-hidden="true">⚙️</span> C — débutant (SoloLearn)</li>
-              <li class="mb-2"><span aria-hidden="true">💛</span> JavaScript — débutant (cours)</li>
+            <ul style="list-style:disc;">
+              <li class="mb-2"> Python — intermédiaire (SoloLearn)</li>
+              <li class="mb-2"> SQL — intermédiaire (SoloLearn)</li>
+              <li class="mb-2"> HTML — intermédiaire (SoloLearn)</li>
+              <li class="mb-2"> CSS — débutant (SoloLearn)</li>
+              <li class="mb-2"> C — débutant (SoloLearn)</li>
+              <li class="mb-2"> JavaScript — débutant (cours)</li>
             </ul>
           </div>
         </div>
@@ -75,6 +77,34 @@
       <div class="container">
         <h2 class="text-center mb-5">Projets</h2>
       
+        <div class="row align-items-center mb-5 p-4" style="background-color: #141922; border-radius: 12px;">
+          <div class="col-md-6 d-flex align-items-center justify-content-center" style="background-color: #0B0E14; border-radius: 8px; min-height: 200px;">
+            <img src="images/boutique.png" alt="capture d'écran du dashboard admin de la boutique" class="img-fluid rounded">
+          </div>
+          <div class="col-md-6">
+            <span class="badge badge-accent mb-2">Projet phare</span>
+            <h3>Boutique en ligne — Flask & SQLite</h3>
+            <p>
+              Application full-stack de gestion de boutique, versionnée de la console à l'interface
+              web complète : back-office admin (tableau de bord, statistiques de vente via Chart.js,
+              gestion des produits/clients/commandes) et boutique cliente publique (catalogue filtrable,
+              panier persistant en session, tunnel de commande). Authentification réelle des deux côtés
+              (mots de passe hashés, sessions Flask, protection des routes sensibles) et modélisation
+              relationnelle complète (clients, produits, commandes, détails de commande avec clé
+              composite et cascade de suppression).
+            </p>
+            <div class="mb-3">
+              <span class="badge bg-secondary">Python</span>
+              <span class="badge bg-secondary">Flask</span>
+              <span class="badge bg-secondary">SQLite</span>
+              <span class="badge bg-secondary">Jinja2</span>
+              <span class="badge bg-secondary">JavaScript</span>
+            </div>
+            <a href="https://github.com/ibrahimasorybh63-creator/git-test" class="btn btn-success">Voir sur GitHub</a>
+          </div>
+        </div>
+
+
         <div class="row align-items-center mb-5 p-4" style="background-color: #141922; border-radius: 12px;">
           <div class="col-md-6 d-flex align-items-center justify-content-center" style="background-color: #0B0E14; border-radius: 8px; min-height: 200px;">
             <img src="images/rpg.png" alt="capture d'écran du système de combat du jeu" class="img-fluid rounded">
@@ -97,6 +127,32 @@
               <span class="badge bg-secondary">Polymorphisme</span>
             </div>
             <a href="https://github.com/ibrahimasorybh63-creator/git-test/tree/master" class="btn btn-success">Voir sur GitHub</a>
+          </div>
+        </div>
+
+        <div class="row align-items-center mb-5 p-4" style="background-color: #141922; border-radius: 12px;">
+          <div class="col-md-6 d-flex align-items-center justify-content-center" style="background-color: #0B0E14; border-radius: 8px; min-height: 200px;">
+            <img src="images/sales_prediction.png" alt="capture d'écran du pipeline de prédiction du revenu" class="img-fluid rounded">
+          </div>
+          <div class="col-md-6">
+            <span class="badge badge-accent mb-2">Projet phare</span>
+            <h3>Sales Revenue Prediction — Machine Learning</h3>
+            <p>
+              Pipeline complet de prédiction du revenu d'une commande à partir de ses caractéristiques
+              (produit, client, région, paiement), construit avec Scikit-learn. Nettoyage et normalisation
+              des données brutes, gestion des valeurs aberrantes par imputation, puis <code>ColumnTransformer</code>
+              encapsulant le prétraitement numérique (standardisation) et catégoriel (encodage one-hot) au sein
+              d'un <code>Pipeline</code> unique — évitant tout risque de fuite de données entre entraînement et test.
+              Modèle de régression linéaire évalué par MAE, RMSE et R².
+            </p>
+            <div class="mb-3">
+              <span class="badge bg-secondary">Python</span>
+              <span class="badge bg-secondary">Pandas</span>
+              <span class="badge bg-secondary">NumPy</span>
+              <span class="badge bg-secondary">Scikit-learn</span>
+              <span class="badge bg-secondary">Machine Learning</span>
+            </div>
+            <a href="https://github.com/ibrahimasorybh63-creator/git-test" class="btn btn-success">Voir sur GitHub</a>
           </div>
         </div>
 
@@ -128,7 +184,7 @@
         </div>
       </div>
 
-      <div class="row g-4 mb-4">
+      <div class="row g-4">
         <div class="col-md-6">
           <div class="p-3 h-100" style="background-color: #141922; border-radius: 12px;">
             <h5>Gestionnaire de tâches</h5>
@@ -151,19 +207,6 @@
           </div>
         </div>
       </div>
-
-      <div class="row g-4">
-        <div class="col-md-6">
-          <div class="p-3 h-100" style="background-color: #141922; border-radius: 12px;">
-            <h5>Base de données scolaire (SQL)</h5>
-            <p class="small">
-              Modélisation relationnelle d'une gestion d'école : élèves, classes, matières et notes
-              liés par clés étrangères, avec requêtes de jointure, agrégation et mise à jour.
-            </p>
-            <span class="badge badge-accent">SQL</span>
-          </div>
-        </div>
-      </div>
     </div>
     </section>
     <section id="competences" class="py-5">
@@ -175,17 +218,17 @@
             <h5 class="mb-3">Langages</h5>
             <div class="mb-3">
               <div class="d-flex justify-content-between">
-                <span>Python</span><span class="text-secondary small">70%</span>
+                <span>Python</span><span class="text-white small">80%</span>
               </div>
-              <div class="progress" style="height: 8px;">
-                <div class="progress-bar-accent" style="width: 70%;"></div>
+              <div class="progress" style="height: 8px;background-color: white;">
+                <div class="progress-bar-accent" style="width: 80%;"></div>
               </div>
             </div>
             <div class="mb-3">
               <div class="d-flex justify-content-between">
-                <span>C</span><span class="text-secondary small">40%</span>
+                <span>C</span><span class="text-white small">40%</span>
               </div>
-              <div class="progress" style="height: 8px;">
+              <div class="progress" style="height: 8px;background-color: white;">
                 <div class="progress-bar-accent" style="width: 40%;"></div>
               </div>
             </div>
@@ -195,10 +238,10 @@
             <h5 class="mb-3">BDD</h5>
             <div class="mb-3">
               <div class="d-flex justify-content-between">
-                <span>SQL</span><span class="text-secondary small">60%</span>
+                <span>SQL</span><span class="text-white small">70%</span>
               </div>
-              <div class="progress" style="height: 8px;">
-                <div class="progress-bar-accent" style="width: 60%;"></div>
+              <div class="progress" style="height: 8px;background-color: white;">
+                <div class="progress-bar-accent" style="width: 70%;"></div>
               </div>
             </div>
           </div>
@@ -207,53 +250,89 @@
             <h5 class="mb-3">Web</h5>
             <div class="mb-3">
               <div class="d-flex justify-content-between">
-                <span>HTML</span><span class="text-secondary small">65%</span>
+                <span>HTML</span><span class="text-white small">65%</span>
               </div>
-              <div class="progress" style="height: 8px;">
+              <div class="progress" style="height: 8px;background-color: white;">
                 <div class="progress-bar-accent" style="width: 65%;"></div>
               </div>
             </div>
             <div class="mb-3">
               <div class="d-flex justify-content-between">
-                <span>CSS</span><span class="text-secondary small">45%</span>
+                <span>CSS</span><span class="text-white small">45%</span>
               </div>
-              <div class="progress" style="height: 8px;">
+              <div class="progress" style="height: 8px;background-color: white;">
                 <div class="progress-bar-accent" style="width: 45%;"></div>
               </div>
             </div>
             <div class="mb-3">
               <div class="d-flex justify-content-between">
-                <span>JavaScript</span><span class="text-secondary small">30%</span>
+                <span>JavaScript</span><span class="text-white small">55%</span>
               </div>
-              <div class="progress" style="height: 8px;">
-                <div class="progress-bar-accent" style="width: 30%;"></div>
+              <div class="progress" style="height: 8px;background-color: white;">
+                <div class="progress-bar-accent" style="width: 55%;"></div>
               </div>
             </div>
             <div class="mb-3">
               <div class="d-flex justify-content-between">
-                <span>Bootstrap 5</span><span class="text-secondary small">30%</span>
+                <span>Bootstrap 5</span><span class="text-white small">30%</span>
               </div>
-              <div class="progress" style="height: 8px;">
+              <div class="progress" style="height: 8px;background-color: white;">
                 <div class="progress-bar-accent" style="width: 30%;"></div>
               </div>
             </div>
           </div>
         
           <div class="col-md-6 col-lg-3">
+            <h5 class="mb-3">Data & IA</h5>
+            <div class="mb-3">
+              <div class="d-flex justify-content-between">
+                <span>Pandas</span><span class="text-white small">Intermédiaire</span>
+              </div>
+              <div class="progress" style="height: 8px;">
+                <div class="progress-bar-accent" style="width: 55%;"></div>
+              </div>
+            </div>
+            <div class="mb-3">
+              <div class="d-flex justify-content-between">
+                <span>NumPy</span><span class="text-white small">Intermédiaire</span>
+              </div>
+              <div class="progress" style="height: 8px;">
+                <div class="progress-bar-accent" style="width: 50%;"></div>
+              </div>
+            </div>
+            <div class="mb-3">
+              <div class="d-flex justify-content-between">
+                <span>Matplotlib</span><span class="text-white small">Débutant</span>
+              </div>
+              <div class="progress" style="height: 8px;">
+                <div class="progress-bar-accent" style="width: 35%;"></div>
+              </div>
+            </div>
+            <div class="mb-3">
+              <div class="d-flex justify-content-between">
+                <span>Scikit-learn</span><span class="text-white small">Débutant</span>
+              </div>
+              <div class="progress" style="height: 8px;">
+                <div class="progress-bar-accent" style="width: 30%;"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-6 col-lg-3">
             <h5 class="mb-3">Outils</h5>
             <div class="mb-3">
               <div class="d-flex justify-content-between">
-                <span>Git</span><span class="text-secondary small">40%</span>
+                <span>Git</span><span class="text-white small">40%</span>
               </div>
-              <div class="progress" style="height: 8px;">
+              <div class="progress" style="height: 8px;background-color: white;">
                 <div class="progress-bar-accent" style="width: 40%;"></div>
               </div>
             </div>
             <div class="mb-3">
               <div class="d-flex justify-content-between">
-                <span>VS Code</span><span class="text-secondary small">70%</span>
+                <span>VS Code</span><span class="text-white small">70%</span>
               </div>
-              <div class="progress" style="height: 8px;">
+              <div class="progress" style="height: 8px;background-color: white;">
                 <div class="progress-bar-accent" style="width: 70%;"></div>
               </div>
             </div>
@@ -265,7 +344,7 @@
     <section id="contact" class="py-5">
       <div class="container text-center">
         <h2 class="mb-4">Contact</h2>
-        <p class="text-secondary mb-5">
+        <p class="text-white mb-5">
           Une question, une opportunité de stage ? N'hésitez pas à me contacter directement.
         </p>
       

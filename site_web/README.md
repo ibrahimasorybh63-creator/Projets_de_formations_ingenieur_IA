@@ -1,26 +1,32 @@
-# Site Web — Portfolio Personnel (One-Page)
+# Portfoibra.github.io — Portfolio Personnel
 
-Portfolio personnel one-page, réalisé en HTML/CSS/JS avec Bootstrap. Version antérieure du portfolio publié sur [`Portfoibra.github.io`](../../Portfoibra.github.io).
+Site portfolio personnel, publié via **GitHub Pages**. Présente mon parcours, mes projets et mes compétences.
+
+🔗 **Site en ligne :** https://ibrahimasorybh63-creator.github.io/Portfoibra.github.io/
 
 ## Contenu
 
-- `index.html` — structure de la page avec les sections Accueil, À propos, Projets, Compétences et Contact.
-- `style.css` — mise en forme personnalisée (au-dessus de Bootstrap).
-- `script.js` — interactions JS (dont un fond animé en `<canvas>` sur la section d'accueil).
-- `bootstrap.min.css` / `bootstrap.bundle.min.js` — framework Bootstrap utilisé pour la mise en page responsive.
+- `index.html` — page one-page avec les sections Accueil, À propos, Projets, Compétences et Contact.
+- `style.css` — mise en forme personnalisée, thème sombre.
+- `script.js` — interactions JS (animations, effets sur la section d'accueil).
+- `bootstrap.min.css` / `bootstrap.bundle.min.js` — framework Bootstrap pour la mise en page responsive.
 - `images/` — photo de profil et visuels du site.
 
-## Lancer le projet
+## Aperçu
 
-Ouvrir simplement `index.html` dans un navigateur (aucune dépendance serveur).
-
-## Sections
-
-- **Accueil** — présentation rapide avec photo et accroche.
-- **À propos** — parcours et objectifs (étudiant en informatique à BEM Conakry, tutorat, club informatique).
-- **Projets** — présentation des projets réalisés.
+- **Accueil** — présentation rapide avec photo de profil et accroche.
+- **À propos** — étudiant en Prépa Ingénieur (L1) à BEM Conakry, passionné par l'IA et le développement, tutorat et activités du club informatique.
+- **Projets** — présentation des projets réalisés (voir le dépôt [`Projets_de_formations_ingenieur_IA`](https://github.com/ibrahimasorybh63-creator)).
 - **Compétences** — technologies maîtrisées.
 - **Contact** — moyens de contact.
+
+## Lancer le projet en local
+
+Ouvrir simplement `index.html` dans un navigateur (aucune dépendance serveur nécessaire).
+
+## Déploiement
+
+Le site est déployé automatiquement via GitHub Pages depuis la branche principale de ce dépôt.
 
 ## Auteur
 
