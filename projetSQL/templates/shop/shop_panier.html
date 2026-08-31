@@ -1,67 +1,128 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Panier client</title>
     <script src="https://cdn.tailwindcss.com"></script>
-</head>
+    <script src="{{ url_for('static', filename='tailwind_config.js') }}"></script>
+  </head>
 
-<body>
+  <body>
     <main>
-        <div class="p-5">
-            <a href="/shop" class="border border-black rounded flex flex-wrap w-1/6">
-                <span>
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 9V5.25A2.25 2.25 0 0 1 10.5 3h6a2.25 2.25 0 0 1 2.25 2.25v13.5A2.25 2.25 0 0 1 16.5 21h-6a2.25 2.25 0 0 1-2.25-2.25V15m-3 0-3-3m0 0 3-3m-3 3H15" />
-                    </svg>
-                </span>
-                Retour à la Boutique
-            </a>
-        </div>
-        <div class="max-w-4xl mx-auto p-5" id="haut_panier">
-            <h1 class="text-2xl font-bold mb-5 text-center">Mon panier</h1>
-            <div id="zone_toast" class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 flex flex-col gap-2"></div>
-            {% if produits|length == 0 %}
-                <p class="flex text-gray-500 text-center justify-center">Votre panier est vide.</p>
-            {% else %}
-            <div id="zone_card">
-                <div class="flex flex-col gap-3">
-                    {% for produit in produits %}
-                    <div class="flex justify-between items-center bg-gray-100 rounded shadow p-4" id="zone_commande{{produit.id}}">
-                        <div class="w-2/4">
-                            <h3 class="font-bold">{{ produit.nom }}</h3>
-                            <p class="text-gray-500">{{ produit.prix }} GNF x {{ produit.quantite }}</p>
-                        </div>
-                    <div class="font-bold w-1/4">
-                            <span id="sous_total{{produit.id}}">{{ produit.sous_total }}</span> GNF
-                        </div>
-                        <div class="flex flex-wrap gap-5 w-1/4">
-                            <details>
-                                <summary class="bg-blue-300 rounded border-2 border-black p-1 cursor-pointer inline-block">Modifier</summary>
-                                <div class="mt-2">
-                                    <input type="number" min="1" value="{{ produit.quantite }}" id="nv_quantite_{{ produit.id }}" class="border w-16">
-                                    <button class="bg-green-500 rounded p-1" onclick="modifierQuantite('{{ produit.id }}')">Valider</button>
-                                </div>
-                            </details>
-                            <button class="bg-red-500 rounded border-2 border-black p-1" onclick="supprimerDuPanier('{{produit.id}}')">Supprimer</button>
-                        </div>
-                    </div>
-                    {% endfor %}
-                </div>
-                <div class="flex flex-wrap justify-end mt-4 text-xl font-bold">
-                    Total : <span id="total_general">{{ total }}</span> GNF
-                </div>
-                <div class="flex justify-center text-center">
-                    <button class="flex flex-wrap bg-green-500 rounded border-2 border-black text-center justify-center p-1" onclick="validerCommande()">Valider la commande</button>
-                </div>
+      <div class="m-5">
+        <button
+          onclick="window.location.href = '/shop'"
+          class="border border-black flex flex-row rounded w-min"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+            class="size-6"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M8.25 9V5.25A2.25 2.25 0 0 1 10.5 3h6a2.25 2.25 0 0 1 2.25 2.25v13.5A2.25 2.25 0 0 1 16.5 21h-6a2.25 2.25 0 0 1-2.25-2.25V15m-3 0-3-3m0 0 3-3m-3 3H15"
+            />
+          </svg>
+          Retour
+        </button>
+      </div>
+      <div class="max-w-4xl mx-auto p-5" id="haut_panier">
+        <h1 class="text-2xl font-bold mb-5 text-center">Mon panier</h1>
+        <div
+          id="zone_toast"
+          class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 flex flex-col gap-2"
+        ></div>
+        {% if produits|length == 0 %}
+        <p class="flex text-gray-500 text-center justify-center">
+          Votre panier est vide.
+        </p>
+        {% else %}
+        <div id="zone_card">
+          <div class="flex flex-col gap-3">
+            {% for produit in produits %}
+            <div
+              class="flex justify-between items-center bg-gray-100 rounded shadow p-4"
+              id="zone_commande{{produit.id}}"
+            >
+              <div class="w-2/4">
+                <h3 class="font-bold">{{ produit.nom }}</h3>
+                <p class="text-gray-500">
+                  {{ produit.prix }} GNF x {{ produit.quantite }}
+                </p>
+              </div>
+              <div class="font-bold w-1/4">
+                <span id="sous_total{{produit.id}}"
+                  >{{ produit.sous_total }}</span
+                >
+                GNF
+              </div>
+              <div class="flex flex-wrap gap-5 w-1/4">
+                <details>
+                  <summary
+                    class="bg-blue-300 rounded border-2 border-black p-1 cursor-pointer inline-block"
+                  >
+                    Modifier
+                  </summary>
+                  <div class="mt-2">
+                    <input
+                      type="number"
+                      min="1"
+                      value="{{ produit.quantite }}"
+                      id="nv_quantite_{{ produit.id }}"
+                      class="border w-16"
+                    />
+                    <button
+                      class="bg-green-500 rounded p-1"
+                      onclick="modifierQuantite('{{ produit.id }}')"
+                    >
+                      Valider
+                    </button>
+                  </div>
+                </details>
+                <button
+                  class="bg-red-500 rounded border-2 border-black p-1"
+                  onclick="supprimerDuPanier('{{produit.id}}')"
+                >
+                  Supprimer
+                </button>
+              </div>
             </div>
-            {% endif %}
+            {% endfor %}
+          </div>
+          <div class="flex flex-wrap justify-end mt-4 text-xl font-bold">
+            Total : <span id="total_general">{{ total }}</span> GNF
+          </div>
+          <div class="flex justify-center text-center">
+            <button
+              class="flex flex-wrap bg-green-500 rounded border-2 border-black text-center justify-center p-1"
+              onclick="validerCommande()"
+            >
+              Valider la commande
+            </button>
+          </div>
         </div>
+        {% endif %}
+      </div>
     </main>
-    <footer>
-
+    <footer id="zone_recomm_panier">
+      {% from "shop/_macro.html" import carte_produit %} {% if
+      produits_similaires %}
+      <h2 class="text-2xl font-bold text-center p-5">
+        Vous aimerez peut-être aussi
+      </h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-10">
+        {% for produit in produits_similaires %} {{ carte_produit(produit) }} {%
+        endfor %}
+      </div>
+      {% endif %}
     </footer>
-</body>
-<script src="{{ url_for('static', filename='shop_script.js') }}"></script>
+  </body>
+  <script src="{{ url_for('static', filename='commun.js') }}"></script>
+  <script src="{{ url_for('static', filename='panier.js') }}"></script>
 </html>

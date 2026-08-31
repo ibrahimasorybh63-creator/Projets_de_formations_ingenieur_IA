@@ -1,60 +1,172 @@
-# ProjetSQL — Gestion de Boutique (Flask + SQLite)
+# ProjetSQL — Gestion de Boutique & Système de Recommandation
 
-Application web de gestion d'une boutique (produits, clients, commandes), construite avec **Flask** et **SQLite**. Comprend une interface **admin** (tableau de bord, gestion CRUD) et une interface **client** (boutique publique avec panier et commande).
+Application web de gestion d'une boutique construite avec **Flask** et **SQLite**.  
+Le projet comprend une interface **admin**, une interface **client** et un premier système de **recommandation de produits** basé sur plusieurs approches.
 
 ## Contenu
 
-- `schema.sql` — définition des 4 tables : `clients` (avec authentification : `email`, `mdp_hash`), `produits` (avec `prix_promo` optionnel), `commandes`, `details_comm` (table de jonction avec clé primaire composite), avec clés étrangères en cascade.
-- `seed.py` — remplit la base `boutique.db` avec un jeu de données de démonstration (produits répartis en 5 catégories, clients avec mots de passe hashés).
-- `entite.py` — classes `Produit`, `Clients` (inscription, connexion avec hash bcrypt), `Commandes` : CRUD complet, plus des fonctions utilitaires (statistiques, produits les plus achetés, commandes groupées avec total).
+- `schema.sql` — définition des tables :
+  - `clients` — gestion des utilisateurs et authentification
+  - `produits` — catalogue des produits, catégories, prix et promotions
+  - `commandes` — commandes des clients
+  - `details_comm` — détail des produits commandés
+  - `recommandations_produits` — stockage des scores de recommandation issus du baseline
+
+- `seed.py` — remplit la base `boutique.db` avec un jeu de données de démonstration comprenant des produits et des clients.
+
+- `entite.py` — contient les classes métier (`Produit`, `Clients`, `Commandes`) ainsi que les fonctions liées aux statistiques et aux systèmes de recommandation.
+
 - `app.py` — application Flask :
-  - **Admin** : tableau de bord, gestion des produits/clients/commandes, protégé par authentification (`@app.before_request`)
-  - **Client** : catalogue filtrable, panier, inscription/connexion, validation de commande
-- `templates/` — pages HTML (admin et boutique).
-- `static/` — fichiers JS (séparés par page) et images du frontend.
+  - **Admin** : tableau de bord, gestion des produits, clients et commandes
+  - **Client** : catalogue, recherche, panier, commandes et recommandations
+
+- `setup/recommendations/` — fonctions dédiées aux systèmes de recommandation.
+
+- `templates/` — pages HTML de l'administration et de la boutique.
+
+- `static/` — fichiers JavaScript et ressources du frontend.
 
 ## Installation et lancement
 
 ```bash
 cd projetSQL
-pip install flask werkzeug
+pip install flask werkzeug numpy scikit-learn
 
-# Créer la base à partir du schéma (une seule fois)
-sqlite3 boutique.db < schema.sql
-
-# Remplir la base avec des données de démonstration
-python seed.py
+#Créer la base à partir du schéma et remplir la base avec les données de démonstration
+python setup.py
 
 # Lancer l'application
 python app.py
 ```
 
-L'application sera accessible sur `http://127.0.0.1:5000`.
+L'application sera accessible sur :
+
+`http://127.0.0.1:5000`
 
 ## Fonctionnalités
 
-**Côté admin** (accès protégé par connexion) :
+### Côté admin
 
-- Tableau de bord : statistiques de vente, produits les plus vendus.
-- Gestion des produits : liste, modification, suppression.
-- Gestion des clients : liste, modification, suppression (création réservée à l'inscription client).
-- Gestion des commandes : création, modification (lignes produits dynamiques, prix promo pris en compte, total affiché), suppression.
+- Tableau de bord avec statistiques de vente
+- Gestion des produits
+- Modification et suppression des produits
+- Gestion des clients
+- Gestion des commandes
+- Gestion dynamique des lignes de commande
+- Prise en compte des prix promotionnels
 
-**Côté client** :
+### Côté client
 
-- Inscription et connexion (mot de passe hashé, session sécurisée).
-- Catalogue filtrable (catégorie, recherche, promotions).
-- Panier : ajout, modification de quantité, suppression.
-- Validation de commande (connexion requise).
+- Inscription et connexion
+- Authentification par session
+- Catalogue des produits
+- Filtrage par catégorie
+- Recherche par nom
+- Filtre des promotions
+- Ajout et modification du panier
+- Suppression de produits du panier
+- Validation de commande
+- Affichage de recommandations
+
+## Système de recommandation
+
+Le projet explore progressivement différentes approches de recommandation.
+
+### 1. Baseline — popularité
+
+Une première recommandation basée sur les produits les plus achetés est utilisée comme **baseline**.
+
+Le score d'un produit est calculé à partir de sa quantité vendue sur une fenêtre temporelle donnée :
+
+```text
+score(produit) =
+quantité vendue du produit /
+quantité totale vendue
+```
+
+Les scores sont recalculés après une nouvelle commande et les produits sont classés afin d'obtenir un **Top-K**.
+
+### 2. Content-based
+
+Une approche basée sur le contenu des produits est également développée.
+
+Les produits sont représentés à partir de leur **description textuelle**, puis une mesure de similarité permet d'identifier les produits proches.
+
+Le système peut ensuite utiliser l'historique d'achat du client pour rechercher des produits similaires à ceux qu'il a déjà achetés.
+
+### 3. Collaborative filtering
+
+Le filtrage collaboratif constitue une prochaine étape du projet.
+
+Cette approche exploitera les comportements d'achat des différents utilisateurs afin de recommander des produits à partir des comportements d'utilisateurs similaires.
 
 ## Concepts mis en œuvre
 
-- SQL : jointures multi-tables, clés étrangères (`PRAGMA foreign_keys`), requêtes paramétrées, contraintes `UNIQUE`/`NOT NULL`.
-- Python : classes avec méthodes d'instance et méthodes statiques, connexion SQLite par requête.
-- Sécurité : hash de mot de passe (`werkzeug.security`), messages d'erreur génériques anti-énumération, protection des routes sensibles.
-- Flask : routage GET/POST, sessions, JSON (API AJAX), redirections, templates Jinja2.
-- Frontend : JavaScript vanilla (`fetch`/`async`), manipulation du DOM, Tailwind CSS.
+### SQL
+
+- Jointures multi-tables
+- Agrégations (`SUM`, `GROUP BY`, `ORDER BY`)
+- Sous-requêtes
+- Requêtes paramétrées
+- Clés étrangères
+- `ON DELETE CASCADE`
+- Contraintes `UNIQUE` et `NOT NULL`
+- Tables de liaison
+
+### Python
+
+- Programmation orientée objet
+- Classes et méthodes
+- Gestion des connexions SQLite
+- Manipulation de listes et dictionnaires
+- Calculs avec NumPy
+
+### Machine Learning
+
+- Représentation vectorielle des données textuelles
+- TF-IDF
+- Similarité cosinus
+- Classement par score
+- Top-K
+- Filtrage basé sur le contenu
+- Exploration du filtrage collaboratif
+
+### Flask
+
+- Routage GET/POST
+- Sessions
+- Templates Jinja2
+- JSON et requêtes AJAX
+- Séparation des responsabilités entre routes et fonctions métier
+
+### Frontend
+
+- JavaScript vanilla
+- `fetch`
+- Manipulation du DOM
+- Tailwind CSS
+- Interface responsive
+
+## Architecture générale du système de recommandation
+
+```text
+Données de la boutique
+        ↓
+Historique / informations produits
+        ↓
+Transformation en données calculables
+        ↓
+Méthode de recommandation
+        ↓
+Calcul des scores
+        ↓
+Classement décroissant
+        ↓
+Top-K
+        ↓
+Affichage dans la boutique
+```
 
 ## Auteur
 
-**Ibrahima (Bah Ibrahima Sory)** — Étudiant en Prépa Ingénieur (L1) à BEM Conakry, Guinée
+**Ibrahima Sory Bah** — Étudiant en Prépa Ingénieur (L1) à BEM Conakry, Guinée

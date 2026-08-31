@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="{{ url_for('static', filename='tailwind_config.js') }}"></script>
+    <title>Page de confirmation</title>
+  </head>
+  <body>
+    <div class="p-1">
+      <a href="/shop" class="border border-black rounded flex p-1 w-min">
+        <span>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+            class="size-6"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M8.25 9V5.25A2.25 2.25 0 0 1 10.5 3h6a2.25 2.25 0 0 1 2.25 2.25v13.5A2.25 2.25 0 0 1 16.5 21h-6a2.25 2.25 0 0 1-2.25-2.25V15m-3 0-3-3m0 0 3-3m-3 3H15"
+            />
+          </svg>
+        </span>
+        Retour
+      </a>
+    </div>
+    <h1 class="text-4xl font-bold text-center">Merci pour votre commande.</h1>
+    <div
+      id="commande_{{commande_id}}"
+      class="grid border-2 border-black rounded m-5 p-5"
+    >
+      <div class="w-full flex flex-row">
+        <div class="flex flex-col w-1/2 m-2">
+          <p>commande #{{commande_id}}</p>
+          <p>{{ commandes.produits|length }} produits</p>
+        </div>
+        <div class="flex flex-col w-1/2 text-end m-2">
+          <p>{{commandes.date}}</p>
+          <p>Total : {{commandes.total}}</p>
+        </div>
+      </div>
+      <div id="details{{commande_id}}">
+        {% for produit in commandes.produits %}
+        <div class="flex justify-between w-full border-t-2 border-t-black p-2">
+          <div class="flex flex-row gap-10">
+            <p class="font-bold">{{ produit.nom }}</p>
+            <p>Quantité : {{ produit.quantite }}</p>
+          </div>
+          <p>{{ produit.prix_unitaire }} GNF</p>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </body>
+</html>

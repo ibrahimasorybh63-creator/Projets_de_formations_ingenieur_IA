@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="{{ url_for('static', filename='tailwind_config.js') }}"></script>
+    <title>profil utilisateur</title>
+</head>
+<body class="bg-gray-200">
+    <div class="p-1 flex flex-row w-full">
+        <div>
+            <a href="/shop" class="border border-black rounded flex p-1 w-min">
+                <span>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 9V5.25A2.25 2.25 0 0 1 10.5 3h6a2.25 2.25 0 0 1 2.25 2.25v13.5A2.25 2.25 0 0 1 16.5 21h-6a2.25 2.25 0 0 1-2.25-2.25V15m-3 0-3-3m0 0 3-3m-3 3H15" />
+                    </svg>
+                </span>
+                Retour
+            </a>
+        </div>    
+        <div class="flex justify-end text-end w-full">
+            <button class="bg-red-500 border-2 border-black rounded ms-screen" onclick="log_out()">
+                Se déconnecter 
+            </button>
+        </div>
+        
+        <br>
+    </div>
+    <div  id="zone_toast"  class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 flex flex-col gap-2"></div>
+    <h1 class="text-4xl text-center font-bold" >Gestion de l'utilisateur</h1>
+    <div  class="flex flex-wrap text-center justify-center p-5">
+        <div class="flex flex-col gap-2 border-2 border-black w-1/2 rounded shadow items-center p-5 bg-white" id="fiche_client" >
+            <img src="{{ url_for('static', filename='img/user_anonyme.jpg') }}" alt="logo d'un utilisateur" class="w-20 h-15 text-start rounded-full"/>
+            <p class="text-2xl font-bold text-center">Informations du client</p>
+            <p class="text-xl font-bold text-center">{{client[1]}} {{client[2]}}</p>
+            <div>
+                <p>Nom : {{client[1]}} </p>
+                <p>Prénom : {{client[2]}} </p>
+                <p>Adresse : {{client[3]}} </p>
+                <p>Adresse mail : {{client[4]}} </p>
+            </div>
+            <hr class="w-full border border-black">
+            <hr class="w-full border border-black">
+            <div class="flex flex-row gap-5 p-5">
+                <button class="border-2 border-black rounded  p-1 bg-blue-500" id="modifier_client">Modifier les informations</button>
+            </div>
+        </div>
+        <div class="hidden w-full flex flex-col items-center justify-center text-center" id="formulaire">
+            <form action="/profil/modifier" method="POST" class="flex flex-col gap-2 border-2 border-black w-1/2  items-center p-5">
+            <label>Nom <span class="text-red-500 font-bold">*</span></label>
+            <input type="text" name="nom" class="w-2/3 border-2 border-black rounded p-1" value="{{client[1]}}" required>
+            <label>Prénom <span class="text-red-500 font-bold">*</span></label>
+            <input type="text" name="prenom" class="w-2/3 border-2 border-black rounded p-1" value="{{client[2]}}" required>
+            <label>Adresse (facultatif) </label>
+            <input type="text" name="adresse" class="w-2/3 border-2 border-black rounded p-1" value="{{client[3]}}">
+            <label>Adresse mail <span class="text-red-500 font-bold">*</span></label>
+            <input type="text" name="email" class="w-2/3 border-2 border-black rounded p-1" value="{{client[4]}}" required>
+            <br>
+            <input class="bg-blue-500 border-2 border-black rounded p-1" type="submit" value="Confirmer">
+            </form>
+            <button class="border-2 border-black rounded w-min  bg-red-500 m-2" id="annuler_modif">Annuler</button>
+        </div>
+    </div>
+    <div class="rounded justify-center items-center border-2 border-black m-5 bg-white" id="historique">
+        <div class="w-full border-b-2 border-b-black">
+            <h1 class="text-4xl text-center font-bold">Historique d'achat</h1>
+        </div>
+        {% if commandes %}
+            {% for id_commande, commande in commandes.items() %}
+            <div id="commande_{{id_commande}}" class="grid m-5">
+                <div class="w-full flex flex-row">
+                    <div class="flex flex-col w-1/2 m-2">
+                        <p>commande #{{id_commande}} </p>
+                        <p>{{ commande.produits|length }} produits</p>
+                    </div>
+                    <div class="flex flex-col w-1/2 text-end m-2">
+                        <p>{{commande.date}}</p>
+                        <p>Total : {{commande.total}}</p>
+                    </div>
+                </div>
+                <button class="text-center bg-gray-500 rounded border-2 border-black m-2 text-white p-1" onclick="button_details('details{{id_commande}}')">Voir les détails</button>
+                <div id="details{{id_commande}}" class="border-b-2 border-b-black hidden">
+                {% for produit in commande.produits %}
+                    <div class="flex justify-between border-t-2 border-t-black p-2">
+                        <div class="flex flex-row gap-10">
+                            <p class="font-bold">
+                                {{ produit.nom }}
+                            </p>
+                            <p>
+                                Quantité : {{ produit.quantite }}
+                            </p>
+                        </div>
+                        <p>
+                            {{ produit.prix_unitaire }} GNF
+                        </p>
+                    </div>
+                {% endfor %}
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <p>Vous n'avez encore passé aucune commande.</p>
+        {% endif %}
+    </div>
+</body>
+<script src="{{ url_for('static', filename='commun.js') }}"></script>
+<script src="{{ url_for('static', filename='admin_client_modifier.js') }}"></script>
+<script src="{{ url_for('static', filename='admin_dashboard.js') }}"></script>
+<script>
+    initialiserGestionClient()
+    document.getElementById('annuler_modif').addEventListener('click',function(){
+        switch_state('fiche_client','formulaire')
+    })
+    function button_details(id) {
+        document.getElementById(id).classList.toggle('hidden')
+    }
+    function log_out() {
+        window.location.href = '/log_out'
+    }
+</script>
+</html>

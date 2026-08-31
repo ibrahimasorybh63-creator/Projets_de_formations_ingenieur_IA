@@ -1,12 +1,20 @@
+<h1 class="text-4xl text-center font-bold p-5">Catalogue des clients</h1>
 <div
   class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-5"
 >
   {% for client in clients %}
-  <div class="bg-white rounded-lg shadow p-5">
+  <div
+    onclick="chargerContenu('/clients/modifier?id={{client[0]}}')"
+    class="bg-white rounded-lg shadow p-4 hover:bg-blue-100 transition duration-300 hover: transform hover:scale-105 cursor-pointer"
+  >
     <h3 class="text-xl font-bold">{{ client[1] }}</h3>
     <h3 class="text-xl font-bold">{{ client[2] }}</h3>
-    <p class="text-red-500" >ID : {{client[0]}}</p>
-    <p class="text-gray-500"><span class="text-green-500">adresse :</span> {{ client[3] }}</p>
+    <p class="text-red-500">ID : {{client[0]}}</p>
+    <p class="">Adresse mail : {{client[4]}} </p>
+    <p class="text-gray-500">
+      <span class="text-green-500">adresse :</span> {{ client[3] }}
+    </p>
+    <p class=" text-center text-xl p-1">cliquer pour modifier</p>
   </div>
   {% endfor %}
 </div>

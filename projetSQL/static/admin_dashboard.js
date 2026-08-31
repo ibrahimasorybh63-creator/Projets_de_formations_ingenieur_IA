@@ -1,8 +1,7 @@
 const toutesLesZones = [
     "zone_catalogue","zone_dashboard",
-    "form_ajout_produit", "form_modifier_produit", "form_supprimer_produit",
-    "form_modifier_client", "form_supprimer_client",
-    "form_ajout_commande","form_supprimer_commande",
+    "form_ajout_produit",
+    "form_ajout_commande",
 ];
 
 function cacherTout() {
@@ -21,6 +20,9 @@ function chargerContenu(url) {
         .then(html => {
             document.getElementById("zone_catalogue").innerHTML = html;
             document.getElementById("zone_catalogue").style.display = "block";
+            interceptFormulaireProduit();
+            initformcommande();
+            initialiserGestionClient();
         });
 }
 
@@ -47,29 +49,36 @@ function interceptFormulaire(formId) {
 }
 
 [
-    "form_ajout_produit", "form_modifier_produit", "form_supprimer_produit",
-    "form_modifier_client", "form_supprimer_client",
-    "form_ajout_commande","form_supprimer_commande"
-].forEach(interceptFormulaire);
+    "form_ajout_produit",
+    "form_ajout_commande",].forEach(interceptFormulaire);
 
-const btnAjouter = document.getElementById("btn_ajouter_ligne");
-const lignesProduits = document.getElementById("lignes_produits");
+initAjoutLigneProduit("btn_ajouter_ligne", "lignes_produits");
 
-if (btnAjouter && lignesProduits) {
-    btnAjouter.addEventListener("click", () => {
-        const ligne = document.createElement("div");
-        ligne.className = "ligne_produit";
-
-        ligne.innerHTML = `
-            <input type="number" min='1' placeholder="id produit" class="border-2 border-black rounded m-1" name="produits_id[]" required />
-            <input type="number" min='1' placeholder="quantité" class="border-2 border-black rounded m-1" name="quantite[]" required />
-            <button type="button" class="supprimer">❌</button>
-        `;
-
-        ligne.querySelector(".supprimer").addEventListener("click", () => {
-            ligne.remove();
+function interceptFormulaireProduit() {
+    const formulaire = document.getElementById('formulaire');
+    if (!formulaire) return;
+    formulaire.addEventListener('submit', async function(event) {
+        event.preventDefault();
+        const donnees = new FormData(formulaire);
+        const response = await fetch(formulaire.action, {
+            method: "POST",
+            body: donnees
         });
-
-        lignesProduits.appendChild(ligne);
+        const html = await response.text();
+        document.getElementById("zone_catalogue").innerHTML = html;
+        afficherToast("Produit modifié avec succès.", "succes");
     });
 }
+function supprimer_produit(){
+                const id = document.getElementById('identif').value;
+                fetch("/produits/supprimer?id="+id,{
+                    method:'POST'
+                })
+                .then(response => {
+                    if (response.ok) {
+                        afficherToast("Produit supprimé de la base.");
+                        chargerContenu("/produits");
+                    }
+
+                });
+};

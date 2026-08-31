@@ -6,77 +6,150 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <title>Modification produit</title>
   </head>
-  <body>
-    <h1 class="text-center text-4xl font-bold p-5">Modification de produit</h1>
+  <body class="bg-gray-100 min-h-screen">
+    <div class="p-1">
+      <button
+        onclick="chargerContenu('/commandes')"
+        class="border border-black rounded flex p-1 w-min bg-white"
+      >
+        <span>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+            class="size-6"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M8.25 9V5.25A2.25 2.25 0 0 1 10.5 3h6a2.25 2.25 0 0 1 2.25 2.25v13.5A2.25 2.25 0 0 1 16.5 21h-6a2.25 2.25 0 0 1-2.25-2.25V15m-3 0-3-3m0 0 3-3m-3 3H15"
+            />
+          </svg>
+        </span>
+        Retour
+      </button>
+    </div>
+    <h1 class="text-center text-4xl font-bold p-5">Modification de commande</h1>
     <div
-      class="flex flex-wrap text-center justify-center p-5"
+      class="flex flex-col text-center justify-center p-5 border-2 border-black items-center w-4/5 m-auto rounded shadow-md bg-white"
       id="form_modifier_produit"
     >
-      <form action="/commandes/modifier" method="post">
+      <form
+        action="/commandes/modifier"
+        method="post"
+        id="formulaire"
+        class="flex flex-col gap-3 w-1/2 items-center p-5"
+      >
+        <input type="hidden" name="id" value="{{ commande_id }}" id="identif" />
+
+        <label class="w-full text-left font-semibold"
+          >Identifiant du client</label
+        >
         <input
-          class="border-2 border-black rounded m-1"
-          type="hidden"
-          name="id"
-          value="{{ commande_id }}"
-        />
-        <label>Identifiant du client </label>
-        <input
-          class="border-2 border-black rounded m-1"
+          class="w-full border-2 border-black rounded m-1 text-center"
           type="number"
           min="1"
           name="clients_id"
           value="{{ commandes.client_id }}"
           required
         />
+
+        <label class="w-full text-left font-semibold"
+          >Date de la commande</label
+        >
         <input
-          class="border-2 border-black rounded m-1"
+          class="w-full border-2 border-black rounded m-1 text-center"
           type="date"
           name="date_comm"
           value="{{ commandes.date }}"
           required
         />
 
-        <div id="lignes_produits">
+        <div id="lignes_produits_modif" class="w-full flex flex-col gap-3 mt-2">
           {% for produit in commandes.produits %}
-          <div class="ligne_produit">
-            <label>Identifiant du produit ({{produit.nom}})</label>
-            <input
-              class="border-2 border-black rounded m-1"
-              type="number"
-              min="1"
-              name="produits_id[]"
-              value="{{ produit.produit_id }}"
-              required
-            />
-
-            <label>Quantite du produit </label>
-            <input
-              class="border-2 border-black rounded m-1"
-              type="number"
-              min="1"
-              name="quantite[]"
-              value="{{ produit.quantite }}"
-              required
-            />
-            <button type="button" class="supprimer">❌</button>
+          <div
+            class="ligne_produit flex flex-wrap items-center gap-2 bg-gray-50 border rounded p-3"
+          >
+            <div class="flex flex-col flex-1 text-left">
+              <label class="text-sm">Identifiant ({{ produit.nom }})</label>
+              <input
+                class="border-2 border-black rounded m-1 text-center"
+                type="number"
+                min="1"
+                name="produits_id[]"
+                value="{{ produit.produit_id }}"
+                required
+              />
+            </div>
+            <div class="flex flex-col flex-1 text-left">
+              <label class="text-sm">Quantité</label>
+              <input
+                class="border-2 border-black rounded m-1 text-center"
+                type="number"
+                min="1"
+                name="quantite[]"
+                value="{{ produit.quantite }}"
+                required
+              />
+            </div>
+            <button
+              type="button"
+              class="supprimer bg-red-500 hover:bg-red-700 text-white rounded w-8 h-8 mt-4"
+            >
+              ❌
+            </button>
           </div>
           {% endfor %}
         </div>
 
         <button
-          class="border-2 border-black rounded bg-gray-200 p-1"
+          class="border-2 border-black rounded bg-gray-200 hover:bg-gray-300 p-2 w-full mt-3"
           type="button"
-          id="btn_ajouter_ligne"
+          id="btn_ajouter_ligne_modif"
         >
           + Ajouter un produit
         </button>
+
         <input
-          class="border-2 border-black rounded m-1"
+          class="w-full border-2 border-black rounded m-1 bg-blue-500 hover:bg-blue-700 text-white p-2 mt-2 cursor-pointer"
           type="submit"
           value="Enregistrer les modifications"
         />
       </form>
+
+      <button
+        class="bg-red-500 hover:bg-red-700 text-white rounded border-2 border-black w-1/5 p-2 mt-4"
+        onclick="switch_state('supprimer_commande', 'form_modifier_produit')"
+      >
+        Supprimer la commande
+      </button>
+    </div>
+
+    <div
+      class="flex flex-col hidden text-center justify-center p-5 border-2 border-black items-center m-auto w-1/2 rounded bg-white mt-5"
+      id="supprimer_commande"
+    >
+      <p class="text-red-500 text-xl font-bold text-center">
+        Êtes-vous sûr de vouloir supprimer cette commande ?
+      </p>
+      <br />
+      <div class="flex flex-row w-full gap-5">
+        <button
+          class="rounded border-2 border-black bg-red-500 hover:bg-red-700 text-white w-1/2 p-2"
+          id="confirm_sup_commande"
+          onclick="supprimer_commande()"
+        >
+          OUI
+        </button>
+        <button
+          class="rounded border-2 border-black bg-blue-500 hover:bg-blue-700 text-white w-1/2 p-2"
+          onclick="switch_state('form_modifier_produit', 'supprimer_commande')"
+        >
+          NON
+        </button>
+      </div>
     </div>
   </body>
-  <script src="{{ url_for('static', filename='admin_commande_modifier.js') }}"></script>
 </html>

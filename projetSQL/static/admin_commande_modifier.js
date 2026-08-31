@@ -1,26 +1,27 @@
-const btnAjouterModif = document.getElementById("btn_ajouter_ligne");
-const lignesProduitsModif = document.getElementById("lignes_produits");
+function initformcommande() {
+    initAjoutLigneProduit("btn_ajouter_ligne_modif", "lignes_produits_modif");
 
-if (btnAjouterModif && lignesProduitsModif) {
-    btnAjouterModif.addEventListener("click", () => {
-        const ligne = document.createElement("div");
-        ligne.className = "ligne_produit";
-
-        ligne.innerHTML = `
-            <input type="number" min='1' placeholder="id produit" name="produits_id[]" class="border-2 border-black rounded m-1" required/>
-            <input type="number" min='1' placeholder="quantité" name="quantite[]" class="border-2 border-black rounded m-1" required/>
-            <button type="button" class="supprimer">❌</button>`
-            ;
-        ligne.querySelector(".supprimer").addEventListener("click", () => {
-            ligne.remove();
+    document.querySelectorAll('.ligne_produit .supprimer').forEach(bouton => {
+        bouton.addEventListener('click', () => {
+            bouton.closest('.ligne_produit').remove();
         });
-
-        lignesProduitsModif.appendChild(ligne);
     });
+    form = document.getElementById('formulaire')
+    if (!form)
+        return
+    else
+        interceptFormulaire('formulaire')
 }
+function supprimer_commande(){
+                const id = document.getElementById('identif').value;
+                fetch("/commandes/supprimer?id="+id,{
+                    method:'POST'
+                })
+                .then(response => {
+                    if (response.ok) {
+                        afficherToast("commande supprimé de la base.");
+                        chargerContenu("/commandes");
+                    }
 
-document.querySelectorAll('.ligne_produit .supprimer').forEach(bouton => {
-    bouton.addEventListener('click', () => {
-        bouton.closest('.ligne_produit').remove();
-    });
-});
+                });
+};

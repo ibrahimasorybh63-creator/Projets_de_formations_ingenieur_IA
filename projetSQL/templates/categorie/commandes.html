@@ -1,11 +1,13 @@
 <div class="w-100 h-100">
-  <div class="w-full flex flex-wrap text-center justify-center p-5 mb-5">
-    <h1 class="text-4xl font-bold">Liste des commandes</h1>
-  </div>
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-5 w-full items-strech justify-center">
+  <h1 class="text-4xl font-bold text-center p-5">Liste des commandes</h1>
+  <div
+    class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-5 w-full items-strech justify-center"
+  >
     {% for id_commande, commande in commandes.items() %}
-    <a  href="/commandes/modifier?id={{ id_commande }}" class="w-full h-full block">
-    <div class="bg-white rounded-lg shadow p-4 transition duration-300 hover: transform hover:scale-105 cursor-pointer h-full">
+    <div
+      onclick="chargerContenu('/commandes/modifier?id={{ id_commande}}')"
+      class="bg-white rounded-lg shadow p-4 transition duration-300 hover: transform hover:scale-105 cursor-pointer h-full"
+    >
       <h3 class="text-xl font-bold">Commande n°{{ id_commande }}</h3>
       <p class="text-gray-500">
         Client : {{ commande.nom }} {{ commande.prenom }}
@@ -21,9 +23,8 @@
         {% endfor %}
       </ul>
       <p class="font-bold text-green-600">Total : {{ commande.total }} GNF</p>
+      <p class="text-xl text-center p-1">Cliquer pour modifier</p>
     </div>
-    </a>
     {% endfor %}
   </div>
 </div>
-<script src="https://cdn.tailwindcss.com"></script>

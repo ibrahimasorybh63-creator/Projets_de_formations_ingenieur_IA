@@ -4,59 +4,56 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="{{ url_for('static', filename='tailwind_config.js') }}"></script>
     <title>Boutique en ligne SQL</title>
   </head>
-  <body
-    class="min-h-screen bg-cover bg-center bg-fixed"
-    style="
-      background-image:
-        linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.521)),
-        url(&quot;https://vulplex.com/images/featured/Realistic-WideAngle-Messy-Grocery-Store-Aisle-with-Packed-Shelves-Wallpaper-69da672342485.jpg&quot;);
-    "
-  >
+  <body class="min-h-screen bg-cover bg-center">
     <header>
       <!-- Barre de navigation -->
-      <div class="flex flext-wrap gap-3 bg-gray-500">
-        <div class="p-5">
+      <div
+        class="flex flex-row bg-white border-b-2 shadow sticky top-0 left-0 w-full z-50"
+      >
+        <div class="w-1/5">
           <img
-            src="{{ url_for('static', filename='img/logo.png') }}"
-            alt="logo de la Boutique"
-            class="w-40 h-20 text-start"
+            src="{{ url_for('static', filename='img/logo_boutique.jpeg') }}"
+            alt="logo d'un utilisateur"
+            class="w-auto m-auto mt-4 h-20 text-start rounded"
           />
         </div>
-        <button
-          class="w-1/4 bg-white hover:bg-blue-500 rounded border h-1/2 m-10"
-          onclick="(activerModeCatalogue(), afficherTout(), filtre_off())"
-        >
-          Accueil
-        </button>
-        <button
-          class="w-1/4 bg-white hover:bg-blue-500 rounded border h-1/2 m-10"
-          onclick="(activerModeCatalogue(), cacherTout(), filtre_on())"
-        >
-          Produits
-        </button>
-        <button
-          class="w-1/4 bg-white hover:bg-blue-500 rounded border h-1/2 m-10"
-          onclick="(activerModePromo(), cacherTout(), filtre_on())"
-        >
-          Promotions
-        </button>
-        <button
-          class="w-1/4 bg-white hover:bg-blue-500 rounded border h-1/2 m-10"
-          onclick="
-            (chargerCont_shop('/shop_contact'),
-              cacherTout(),
-              filtre_off(),
-              cacher_barre())
-          "
-        >
-          Contact
-        </button>
-        <div class="me-5">
-          <a
-            href="/shop_panier"
-            class="hover:bg-blue-500 rounded bg-white p-2 mt-5 relative flex flex-col items-center"
+
+        <div class="flex flex-row w-3/5">
+          <button
+            class="w-1/4 bg-gray-50 h-1/4 hover:text-blue-500 rounded m-10"
+            onclick="(activerModeCatalogue(), afficherTout(), filtre_off())"
+          >
+            Accueil
+          </button>
+          <button
+            class="w-1/4 bg-gray-50 hover:text-blue-500 rounded m-10 h-1/4"
+            onclick="(activerModeCatalogue(), cacherTout(), filtre_on())"
+          >
+            Produits
+          </button>
+          <button
+            class="w-1/4 bg-gray-50 hover:text-blue-500 rounded h-1/4 m-10"
+            onclick="(activerModePromo(), cacherTout(), filtre_on())"
+          >
+            Promotions
+          </button>
+          <button
+            class="w-1/4 bg-gray-50 hover:text-blue-500 rounded h-1/4 m-10"
+            onclick="
+              (chargerCont_shop('/shop_contact'), cacherTout(), filtre_off())
+            "
+          >
+            Contact
+          </button>
+        </div>
+        <div class="me-5 flex flex-row w-1/5">
+          <button
+            class="bg-gray-50 hover:text-blue-500 mt-10 m-5 rounded h-1/4"
+            onclick="afficher_barre()"
+            id="recherche"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -64,7 +61,46 @@
               viewBox="0 0 24 24"
               stroke-width="1.5"
               stroke="currentColor"
-              class="size-6 m-2"
+              class="size-6"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
+              />
+            </svg>
+          </button>
+          <a
+            class="text-start bg-gray-50 rounded flex flex-col items-center p-1 mt-5 m-5 hover:text-blue-500"
+            href="/profil"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+              class="size-6"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
+              />
+            </svg>
+            profil
+          </a>
+          <a
+            href="/shop_panier"
+            class="hover:text-blue-500 rounded bg-gray-50 m-5 mt-5 flex flex-col items-center"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+              class="size-6"
             >
               <path
                 stroke-linecap="round"
@@ -77,13 +113,14 @@
               class="absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center animate-pulse {% if long_panier == 0 %}hidden{% endif %}"
               >{{ long_panier }}</span
             >
-            <p class="text-center">Panier</p>
+            Panier
           </a>
         </div>
       </div>
-      <div id="zone_recherche" class="flex flext-wrap gap-10 mt-5">
+      <!-- barre de recherche  -->
+      <div id="zone_recherche" class="flex flex-wrap hidden gap-10 mt-10">
         <div class="w-1/4"></div>
-        <div class="w-2/4 justify-center">
+        <div class="w-2/4 justify-center mb-3">
           <input
             type="text"
             placeholder="Rechercher un produit..."
@@ -100,15 +137,141 @@
         <div class="w-1/4"></div>
       </div>
     </header>
-    <main>
+    <main class="bg-gray-200 pb-5">
       <!-- contenue de la page -->
-      <div id="zone_haut_vitrine">
-        <div class="flex flext-wrap text-center justify-center">
+      <div id="zone_haut_vitrine" class="h-4/5">
+        <!-- hero de la boutique  -->
+        <section class="relative m-auto items-center justify-center">
           <img
-            src="{{ url_for('static', filename='img/soldes.jpg') }}"
-            alt="image de soldes"
-            class="p-5 w-1/3 h-40"
+            src="{{ url_for('static', filename='img/hero.jpeg') }}"
+            alt="Produits Nimba Shop"
           />
+          <div
+            class="absolute inset-0 flex flex-col justify-center items-end text-right px-12"
+          >
+            <h1 class="text-4xl font-bold text-gray-900 max-w-md">
+              Tout ce qu'il vous faut, au même endroit.
+            </h1>
+            <p class="text-gray-900 mt-4 max-w-md">
+              Découvrez des produits de qualité pour chaque besoin.
+            </p>
+          </div>
+        </section>
+        <div
+          class="divide-x shadow-md border flex flex-row rounded p-1 bg-white"
+        >
+          <div class="w-1/5 flex flex-row p-1">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+              class="size-6 w-1/2 mt-5"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M8.25 18.75a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 0 1-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 0 0-3.213-9.193 2.056 2.056 0 0 0-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 0 0-10.026 0 1.106 1.106 0 0 0-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12"
+              />
+            </svg>
+            <div class="flex flex-col">
+              <p class="text-center text-l font-bold">Livraison gratuite</p>
+              <p class="text-center">
+                A partir des commandes de plus de 100000 GNF
+              </p>
+            </div>
+          </div>
+          <div class="w-1/5 flex flex-row p-1">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+              class="size-6 w-1/2 mt-5"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z"
+              />
+            </svg>
+            <div class="flex flex-col">
+              <p class="text-center text-l font-bold">Payment sécurisé</p>
+              <p class="text-center">Satisfait ou remboursé</p>
+            </div>
+          </div>
+          <div class="w-1/5 flex flex-row p-1">
+            <svg
+              class="size-6 w-1/2 mt-5"
+              aria-hidden="true"
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="m7.171 12.906-2.153 6.411 2.672-.89 1.568 2.34 1.825-5.183m5.73-2.678 2.154 6.411-2.673-.89-1.568 2.34-1.825-5.183M9.165 4.3c.58.068 1.153-.17 1.515-.628a1.681 1.681 0 0 1 2.64 0 1.68 1.68 0 0 0 1.515.628 1.681 1.681 0 0 1 1.866 1.866c-.068.58.17 1.154.628 1.516a1.681 1.681 0 0 1 0 2.639 1.682 1.682 0 0 0-.628 1.515 1.681 1.681 0 0 1-1.866 1.866 1.681 1.681 0 0 0-1.516.628 1.681 1.681 0 0 1-2.639 0 1.681 1.681 0 0 0-1.515-.628 1.681 1.681 0 0 1-1.867-1.866 1.681 1.681 0 0 0-.627-1.515 1.681 1.681 0 0 1 0-2.64c.458-.361.696-.935.627-1.515A1.681 1.681 0 0 1 9.165 4.3ZM14 9a2 2 0 1 1-4 0 2 2 0 0 1 4 0Z"
+              />
+            </svg>
+            <div class="flex flex-col">
+              <p class="text-center text-l font-bold">Qualité premium</p>
+              <p class="text-center">choisis méticuleusement</p>
+            </div>
+          </div>
+          <div class="w-1/5 flex flex-row">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+              class="size-6 w-1/2 mt-5"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99"
+              />
+            </svg>
+            <div class="flex flex-col p-1">
+              <p class="text-center text-l font-bold">Retours facile</p>
+              <p class="text-center">
+                Retournez facilement vos articles dans un délai de 30 jours.
+              </p>
+            </div>
+          </div>
+          <div class="w-1/5 flex flex-row">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+              class="size-6 w-1/2 mt-5"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M3 18v-6a9 9 0 0 1 18 0v6"
+              />
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"
+              />
+            </svg>
+            <div class="flex flex-col p-1">
+              <p class="text-center text-l font-bold">Service client 24/7</p>
+              <p class="text-center">Nous sommes là pour assister</p>
+            </div>
+          </div>
         </div>
         <h2 class="text-center text-4xl p-5">
           Découvrez les produits de la Boutique
@@ -135,13 +298,103 @@
         id="zone_toast"
         class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 flex flex-col gap-2"
       ></div>
-      <div class="flex flex-wrap">
-        <div class="w-1/5"></div>
-        <div id="zone_catalogue" class="w-3/5 mt-5"></div>
-        <div class="w-1/5"></div>
+      <div id="icone_categorie">
+        <h3 class="text-l text-center">Découvrez nos catégories d'articles</h3>
+        <div
+          class="flex flex-row w-full items-center justify-center p-5 gap-10"
+        >
+          <div
+            class="flex flex-col w-1/5 cursor-pointer transition duration-300 hover: transform hover:scale-105"
+            onclick="
+              (activerModeCatalogue(),
+                appliquerFiltres('Alimentaire'),
+                filtre_on(),
+                cacherTout())
+            "
+          >
+            <img
+              src="{{ url_for('static', filename='img/alimentaire.jpg') }}"
+              class="h-40 cursor-pointer rounded-full w-full"
+              alt="produits alimentaires"
+            />
+            <h3 class="text-l text-center">Alimentaire</h3>
+            <p class="text-center text-blue-500">consulter</p>
+          </div>
+          <div
+            class="flex flex-col w-1/5 cursor-pointer transition duration-300 hover: transform hover:scale-105"
+            onclick="
+              (activerModeCatalogue(),
+                appliquerFiltres('Hygiène'),
+                filtre_on(),
+                cacherTout())
+            "
+          >
+            <img
+              src="{{ url_for('static', filename='img/hygiene.jpg') }}"
+              class="h-40 cursor-pointer rounded-full w-full"
+              alt="produits d'hygiene"
+            />
+            <h3 class="text-l text-center">Hygiène</h3>
+            <p class="text-center text-blue-500">consulter</p>
+          </div>
+          <div
+            class="flex flex-col w-1/5 cursor-pointer transition duration-300 hover: transform hover:scale-105"
+            onclick="
+              (activerModeCatalogue(),
+                appliquerFiltres('Papeterie'),
+                filtre_on(),
+                cacherTout())
+            "
+          >
+            <img
+              src="{{ url_for('static', filename='img/papeterie.jpg') }}"
+              class="h-40 cursor-pointer rounded-full w-full"
+              alt="Produits de papeterie"
+            />
+            <h3 class="text-l text-center">Papeterie</h3>
+            <p class="text-center text-blue-500">consulter</p>
+          </div>
+          <div
+            class="flex flex-col w-1/5 cursor-pointer transition duration-300 hover: transform hover:scale-105"
+            onclick="
+              (activerModeCatalogue(),
+                appliquerFiltres('Électronique'),
+                filtre_on(),
+                cacherTout())
+            "
+          >
+            <img
+              src="{{ url_for('static', filename='img/electronique.jpg') }}"
+              class="h-40 cursor-pointer rounded-full w-full"
+              alt="produits electroniques"
+            />
+            <h3 class="text-l text-center">Electronique</h3>
+            <p class="text-center text-blue-500">consulter</p>
+          </div>
+          <div
+            class="flex flex-col w-1/5 cursor-pointer transition duration-300 hover: transform hover:scale-105"
+            onclick="
+              (activerModeCatalogue(),
+                appliquerFiltres('Boisson'),
+                filtre_on(),
+                cacherTout())
+            "
+          >
+            <img
+              src="{{ url_for('static', filename='img/boisson.jpg') }}"
+              class="h-40 cursor-pointer rounded-full w-full"
+              alt="Boissons"
+            />
+            <h3 class="text-l text-center">Boissons</h3>
+            <p class="text-center text-blue-500">consulter</p>
+          </div>
+        </div>
+      </div>
+      <div class="flex flex-wrap items-center justify-center text-center">
+        <div id="zone_catalogue" class="w-4/5 mt-5 hidden"></div>
       </div>
     </main>
-    <footer class="bg-gray-500 mt-5 p-5">
+    <footer class="bg-gray-500 p-5">
       <div class="flex flex-wrap justify-between">
         <div class="flex flex-col gap-2">
           <button
@@ -169,14 +422,14 @@
                 filtre_off(),
                 cacher_barre())
             "
-            class="text-blue-300 hover:text-white text-start"
+            class="text-blue-300 hover:text-white text-start cursor-pointer"
             >Contact</a
           >
         </div>
         <div class="flex flex-col gap-2 text-white">
           <p>
-            © 2026 Boutique SQL — Projet formation ingénieur IA. Tous droits
-            réservés.
+            © 2026 Boutique Nimba shop — Projet formation ingénieur IA. Tous
+            droits réservés.
           </p>
           <a
             href="mailto:ibrahimasorybh63@gmail.com"
@@ -187,7 +440,8 @@
       </div>
     </footer>
   </body>
-  <script src="{{ url_for('static', filename='shop_script.js') }}"></script>
+  <script src="{{ url_for('static', filename='commun.js') }}"></script>
+  <script src="{{ url_for('static', filename='shop_catalogue.js') }}"></script>
   <script>
     document.addEventListener("DOMContentLoaded", function () {
       chargerCont_shop("/shop_vitrine");

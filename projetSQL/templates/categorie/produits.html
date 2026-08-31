@@ -1,15 +1,26 @@
 <div>
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-5 w-full justify-center">
+  <h1 class="text-4xl text-center font-bold p-5">Catalogue des produits</h1>
+  <div
+    class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-5 w-full justify-center"
+  >
     {% for produit in produits %}
     <div
+      onclick="chargerContenu('/produits/modifier?id={{ produit[0] }}')"
       class="bg-white rounded-lg shadow p-4 hover:bg-blue-100 transition duration-300 hover: transform hover:scale-105 cursor-pointer"
     >
       <h3 class="text-xl font-bold">{{ produit[1] }}</h3>
       <p>ID : {{produit[0]}}</p>
       <p class="text-gray-500">Type : {{ produit[3] }}</p>
-      <p class="text-green-600 font-semibold">{{ produit[2] }} GNF</p>
+      <p class="text-green-600 font-semibold">
+        <span class="text-gray-500">Prix : </span>{{ produit[2] }} GNF
+      </p>
+      <p
+        class="text-red-500 font-semibold {% if produit[4] is none %} hidden {% endif %}"
+      >
+        Prix promo : {{ produit[4] }} GNF
+      </p>
+      <p class="text-center text-xl p-1">cliquer pour modifier</p>
     </div>
     {% endfor %}
   </div>
 </div>
-<script src="https://cdn.tailwindcss.com"></script>

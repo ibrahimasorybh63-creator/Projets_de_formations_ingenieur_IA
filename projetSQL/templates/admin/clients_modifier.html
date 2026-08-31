@@ -1,0 +1,137 @@
+<div class="p-5">
+  <button
+    onclick="chargerContenu('/clients')"
+    class="border border-black rounded flex flex-wrap p-1"
+  >
+    <span>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke-width="1.5"
+        stroke="currentColor"
+        class="size-6"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          d="M8.25 9V5.25A2.25 2.25 0 0 1 10.5 3h6a2.25 2.25 0 0 1 2.25 2.25v13.5A2.25 2.25 0 0 1 16.5 21h-6a2.25 2.25 0 0 1-2.25-2.25V15m-3 0-3-3m0 0 3-3m-3 3H15"
+        />
+      </svg>
+    </span>
+    Retour
+  </button>
+</div>
+<div
+  id="zone_toast"
+  class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 flex flex-col gap-2"
+></div>
+<h1 class="text-4xl text-center font-bold">Gestion de l'utilisateur</h1>
+<div class="flex flex-wrap text-center justify-center p-5">
+  <div
+    class="flex flex-col gap-2 border-2 border-black w-1/2 items-center p-5"
+    id="fiche_client"
+  >
+    <p class="text-2xl font-bold text-center">Informations du client</p>
+    <p class="text-xl font-bold text-center">{{client[1]}} {{client[2]}}</p>
+    <div>
+      <p>ID du client: {{client[0]}}</p>
+      <p>Nom : {{client[1]}}</p>
+      <p>Prénom : {{client[2]}}</p>
+      <p>Adresse : {{client[3]}}</p>
+      <p>Adresse mail : {{client[4]}}</p>
+    </div>
+    <hr class="w-full" />
+    <hr class="w-full" />
+    <div class="flex flex-row gap-5 p-5">
+      <button
+        class="border-2 border-black rounded w-1/2 p-1 bg-blue-500"
+        id="modifier_client"
+      >
+        Modifier les informations
+      </button>
+      <br />
+      <button
+        class="border-2 border-black rounded w-1/2 p-1 bg-red-500"
+        id="sup_client"
+      >
+        Supprimer le client
+      </button>
+    </div>
+  </div>
+  <div
+    class="flex flex-col justify-center hidden text-center p-5"
+    id="confirm_sup"
+  >
+    <p>Voulez vous vraiment supprimer cet utilisateur ?</p>
+    <div class="flex flex-row p-5 gap-5">
+      <button
+        class="border-2 border-black rounded w-1/2 bg-red-500"
+        id="suppression_client"
+        identif="{{client[0]}}"
+      >
+        OUI
+      </button>
+      <button
+        class="border-2 border-black rounded w-1/2 bg-blue-500"
+        id="annulation_sup"
+      >
+        NON
+      </button>
+    </div>
+    <p class="text-red-500 text-xl font-bold">
+      Attention !Cette action est irréversible.
+    </p>
+  </div>
+  <form
+    action="/clients/modifier"
+    method="POST"
+    class="flex flex-col gap-2 border-2 border-black w-1/2 items-center p-5 hidden"
+    id="formulaire"
+  >
+    <input
+      type="text"
+      name="clients_id"
+      class="w-2/3 border-2 border-black rounded p-1 hidden"
+      value="{{client[0]}}"
+      id="identif"
+    />
+    <label>Nom <span class="text-red-500 font-bold">*</span></label>
+    <input
+      type="text"
+      name="nom"
+      class="w-2/3 border-2 border-black rounded p-1"
+      value="{{client[1]}}"
+      required
+    />
+    <label>Prénom <span class="text-red-500 font-bold">*</span></label>
+    <input
+      type="text"
+      name="prenom"
+      class="w-2/3 border-2 border-black rounded p-1"
+      value="{{client[2]}}"
+      required
+    />
+    <label>Adresse (facultatif) </label>
+    <input
+      type="text"
+      name="adresse"
+      class="w-2/3 border-2 border-black rounded p-1"
+      value="{{client[3]}}"
+    />
+    <label>Adresse mail <span class="text-red-500 font-bold">*</span></label>
+    <input
+      type="text"
+      name="email"
+      class="w-2/3 border-2 border-black rounded p-1"
+      value="{{client[4]}}"
+      required
+    />
+    <br />
+    <input
+      class="bg-blue-500 border-2 border-black rounded p-1"
+      type="submit"
+      value="Confirmer"
+    />
+  </form>
+</div>
