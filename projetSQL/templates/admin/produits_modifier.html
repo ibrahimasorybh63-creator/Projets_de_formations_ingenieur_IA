@@ -1,34 +1,115 @@
 <div class="p-1">
-        <button onclick="chargerContenu('/clients')" class="border border-black rounded flex p-1 w-min bg-white">
-            <span>
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 9V5.25A2.25 2.25 0 0 1 10.5 3h6a2.25 2.25 0 0 1 2.25 2.25v13.5A2.25 2.25 0 0 1 16.5 21h-6a2.25 2.25 0 0 1-2.25-2.25V15m-3 0-3-3m0 0 3-3m-3 3H15" />
-                </svg>
-            </span>
-            Retour
-        </button>
-    </div>
-<h1 class="text-4xl font-bold text-center p-5">Modification du produit </h1>
-<div  class="flex flex-col text-center justify-center p-5 border-2 border-black items-center w-4/5 m-auto rounded shadow-md bg-white"  id="form_modifier_produit">
-    <form action="/produits/modifier" method="POST" class="flex flex-col gap-2 w-1/2  items-center p-5" id="formulaire" >
-        <input type="hidden" name="id" value="{{produit[0]}}" id="identif">
-        <label>Nom du produit <span class="text-red-500 font-bold">*</span>  </label>
-        <input class="w-full border-2 border-black rounded m-1 text-center" name="nom" value="{{produit[1]}}" type="text"  id="nom" required>
-        <label>type de produit <span class="text-red-500 font-bold">*</span>  </label>
-        <input class="w-full border-2 border-black rounded m-1 text-center" name="type_prod" value="{{produit[3]}}" type="text"  id="type" required>
-        <label>prix <span class="text-red-500 font-bold">*</span> </label>
-        <input class="w-full border-2 border-black rounded m-1 text-center" min="0" name="prix" value="{{produit[2]}}" type="number"  id="prix" required>
-        <label>prix_promo (facultatif)</label>
-        <input class="w-full border-2 border-black rounded m-1 text-center" name="prix_promo" min="0" value="{{ produit[4] if produit[4] is not none else '' }}" type="number" id="" placeholder="null">
-        <input class="w-full border-2 border-black rounded m-1 bg-blue-500 hover:bg-blue-700" type="submit" value="Modifier" id="confirm">
-    </form>
-    <button class="bg-red-500 rounded border-2 border-black w-1/5 hover:bg-red-700" onclick="switch_state('supprimer_produit','form_modifier_produit')">supprimer</button>
+  <button
+    onclick="chargerContenu('/produits')"
+    class="border border-black rounded flex p-1 w-min bg-white"
+  >
+    <span>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke-width="1.5"
+        stroke="currentColor"
+        class="size-6"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          d="M8.25 9V5.25A2.25 2.25 0 0 1 10.5 3h6a2.25 2.25 0 0 1 2.25 2.25v13.5A2.25 2.25 0 0 1 16.5 21h-6a2.25 2.25 0 0 1-2.25-2.25V15m-3 0-3-3m0 0 3-3m-3 3H15"
+        />
+      </svg>
+    </span>
+    Retour
+  </button>
 </div>
-<div class="flex flex-col hidden text-center justify-center p-5 border-2 border-black items-center m-auto w-1/2 rounded bg-white" id="supprimer_produit">
-        <p class="text-red-500 text-xl font-bold text-center">Êtes-vous sûr de vouloir supprimer ce produit ? </p>
-        <br>
-        <div class="flex flex-row w-full gap-5">
-            <button class="rounded border-2 border-black bg-red-500  w-1/2 hover:bg-red-700" onclick="supprimer_produit()">OUI</button>
-            <button class="rounded border-2 border-black bg-blue-500 w-1/2 hover:bg-blue-700" onclick="switch_state('form_modifier_produit','supprimer_produit')">NON</button>
-        </div>
-    </div>
+<h1 class="text-4xl font-bold text-center p-5">Modification du produit</h1>
+<div
+  class="flex flex-col text-center justify-center p-5 border-2 border-black items-center w-4/5 m-auto rounded shadow-md bg-white"
+  id="form_modifier_produit"
+>
+  <form
+    action="/produits/modifier"
+    method="POST"
+    class="flex flex-col gap-2 w-1/2 items-center p-5"
+    id="formulaire"
+  >
+    <input type="hidden" name="id" value="{{produit[0]}}" id="identif" />
+    <label>Nom du produit <span class="text-red-500 font-bold">*</span> </label>
+    <input
+      class="w-full border-2 border-black rounded m-1 text-center"
+      name="nom"
+      value="{{produit[1]}}"
+      type="text"
+      id="nom"
+      required
+    />
+    <label
+      >type de produit <span class="text-red-500 font-bold">*</span>
+    </label>
+    <input
+      class="w-full border-2 border-black rounded m-1 text-center"
+      name="type_prod"
+      value="{{produit[3]}}"
+      type="text"
+      id="type"
+      required
+    />
+    <label>prix <span class="text-red-500 font-bold">*</span> </label>
+    <input
+      class="w-full border-2 border-black rounded m-1 text-center"
+      min="0"
+      name="prix"
+      value="{{produit[2]}}"
+      type="number"
+      id="prix"
+      required
+    />
+    <label>prix_promo (facultatif)</label>
+    <input
+      class="w-full border-2 border-black rounded m-1 text-center"
+      name="prix_promo"
+      min="0"
+      value="{{ produit[4] if produit[4] is not none else '' }}"
+      type="number"
+      id=""
+      placeholder="null"
+    />
+    <label>Description du produit (facultatif)</label>
+    <input type="text" name="descrip" placeholder="null" value="{{ produit[5] if produit[5] is not none else '' }}" class="w-full border-2 border-black rounded m-1 text-center">
+    <input
+      class="w-full border-2 border-black rounded m-1 bg-blue-500 hover:bg-blue-700"
+      type="submit"
+      value="Modifier"
+      id="confirm"
+    />
+  </form>
+  <button
+    class="bg-red-500 rounded border-2 border-black w-1/5 hover:bg-red-700"
+    onclick="switch_state('supprimer_produit', 'form_modifier_produit')"
+  >
+    supprimer
+  </button>
+</div>
+<div
+  class="flex flex-col hidden text-center justify-center p-5 border-2 border-black items-center m-auto w-1/2 rounded bg-white"
+  id="supprimer_produit"
+>
+  <p class="text-red-500 text-xl font-bold text-center">
+    Êtes-vous sûr de vouloir supprimer ce produit ?
+  </p>
+  <br />
+  <div class="flex flex-row w-full gap-5">
+    <button
+      class="rounded border-2 border-black bg-red-500 w-1/2 hover:bg-red-700"
+      onclick="supprimer_produit()"
+    >
+      OUI
+    </button>
+    <button
+      class="rounded border-2 border-black bg-blue-500 w-1/2 hover:bg-blue-700"
+      onclick="switch_state('form_modifier_produit', 'supprimer_produit')"
+    >
+      NON
+    </button>
+  </div>
+</div>

@@ -1,3 +1,4 @@
+# Peuple la base de démonstration avec le catalogue, des comptes de test et des commandes générées.
 def remplir_base():
     import sqlite3
     from werkzeug.security import generate_password_hash

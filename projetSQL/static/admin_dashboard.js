@@ -13,6 +13,7 @@ function afficher(id) {
     document.getElementById(id).style.display = "block";
 }
 
+// Charge un fragment HTML dans le tableau de bord puis réactive les gestionnaires associés à ce contenu dynamique.
 function chargerContenu(url) {
     cacherTout();
     fetch(url)
@@ -26,6 +27,7 @@ function chargerContenu(url) {
         });
 }
 
+// Intercepte un formulaire chargé dans le tableau de bord pour soumettre ses données et remplacer le catalogue sans rechargement.
 function interceptFormulaire(formId) {
     const conteneur = document.getElementById(formId);
     if (!conteneur) return;
@@ -54,6 +56,7 @@ function interceptFormulaire(formId) {
 
 initAjoutLigneProduit("btn_ajouter_ligne", "lignes_produits");
 
+// Gère spécifiquement l'envoi asynchrone du formulaire de modification d'un produit et le retour visuel associé.
 function interceptFormulaireProduit() {
     const formulaire = document.getElementById('formulaire');
     if (!formulaire) return;

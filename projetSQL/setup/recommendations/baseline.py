@@ -1,3 +1,4 @@
+# Calcule la part de ventes de chaque produit sur la période puis actualise les scores de recommandation globaux.
 def recalculer_taux_vente(conn,plage_jours=30):
     cur = conn.cursor()
     quantite_par_produit = cur.execute("""

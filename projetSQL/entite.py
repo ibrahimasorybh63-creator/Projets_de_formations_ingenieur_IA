@@ -1,15 +1,18 @@
+from werkzeug.security import generate_password_hash,check_password_hash
+from sqlite3 import IntegrityError
 class Produit:
-    def __init__(self,conn,nom,prix,type_prod,prix_promo = None,produits_id=None):
+    def __init__(self,conn,nom,prix,type_prod,prix_promo = None,descrip = None,produits_id=None):
         self.nom = nom 
         self.type_prod = type_prod
         self.prix = prix
         self.produits_id = produits_id
         self.prix_promo = prix_promo
+        self.descrip = descrip
         self.conn = conn
     def ajouter_en_base(self):
         cur = self.conn.cursor()
-        cur.execute("insert into produits (nom,prix,type_prod,prix_promo) values (?,?,?,?);",
-        (self.nom,self.prix,self.type_prod,self.prix_promo))
+        cur.execute("insert into produits (nom,prix,type_prod,prix_promo,descrip) values (?,?,?,?,?);",
+        (self.nom,self.prix,self.type_prod,self.prix_promo,self.descrip))
         self.conn.commit()
         self.produits_id = cur.lastrowid
     @staticmethod
@@ -21,31 +24,29 @@ class Produit:
         )
         return cur.fetchone()
     @staticmethod
-    def modifier_prix(conn,prix,id):
+    def modifier_prix(conn,prix,produit_id):
         cur = conn.cursor()
-        cur.execute("update produits set prix = ? where produits_id = ?;",(prix,id))
+        cur.execute("update produits set prix = ? where produits_id = ?;",(prix,produit_id))
         conn.commit()
     @staticmethod
-    def supprimer(conn,id):
+    def supprimer(conn,produit_id):
         cur = conn.cursor()
-        cur.execute("delete from produits where produits_id = ?;",(id,))
+        cur.execute("delete from produits where produits_id = ?;",(produit_id,))
         conn.commit()
     @staticmethod
     def recuperer_prix_par_id(conn, produits_id):
         cur = conn.cursor()
-        cur.execute("SELECT prix FROM produits WHERE produits_id = ?;", (produits_id,))
+        cur.execute("SELECT prix, prix_promo FROM produits WHERE produits_id = ?;", (produits_id,))
         view = cur.fetchone()
         return view 
     @staticmethod
-    def modifier(conn, nom, type_prod, prix, prix_promo, id):
+    def modifier(conn, nom, type_prod, prix, prix_promo,description,produit_id):
         cur = conn.cursor()
-        cur.execute("UPDATE produits set nom = ?,type_prod = ?,prix = ?,prix_promo = ? where produits_id = ?",(nom,type_prod,prix,prix_promo,id))
+        cur.execute("UPDATE produits set nom = ?,type_prod = ?,prix = ?,prix_promo = ?,descrip = ? where produits_id = ?",(nom,type_prod,prix,prix_promo,description,produit_id))
         conn.commit()
 
 
 
-from werkzeug.security import generate_password_hash,check_password_hash
-from sqlite3 import IntegrityError
 class Clients:
     def __init__(self,conn,nom,prenom,email,mdp_hash,adresse=None,clients_id=None):
         self.nom = nom
@@ -67,14 +68,14 @@ class Clients:
         message = {"message":"Création du compte réussie."}
         return (message,200)
     @staticmethod
-    def modifier_client(conn,nom,prenom,adresse,email,id):
+    def modifier_client(conn,nom,prenom,adresse,email,client_id):
         cur = conn.cursor()
-        cur.execute("update clients set nom = ?, prenom = ?, adresse = ?,email = ? where clients_id = ?;",(nom,prenom,adresse,email,id))
+        cur.execute("update clients set nom = ?, prenom = ?, adresse = ?,email = ? where clients_id = ?;",(nom,prenom,adresse,email,client_id))
         conn.commit()
     @staticmethod
-    def supprimer(conn,id):
+    def supprimer(conn,client_id):
         cur = conn.cursor()
-        cur.execute("delete from clients where clients_id = ?;",(id,))
+        cur.execute("delete from clients where clients_id = ?;",(client_id,))
         conn.commit()
     @staticmethod
     def connexion(conn,email,mdp):
@@ -95,9 +96,9 @@ class Clients:
                 message = {"message":"email ou mot de passe incorrect."}
                 return (message,400)
     @staticmethod
-    def recuperer_par_id(conn,id):
+    def recuperer_par_id(conn,client_id):
         cur = conn.cursor()
-        cur.execute("SELECT * FROM  clients where clients_id = ?",(id,))
+        cur.execute("SELECT * FROM  clients where clients_id = ?",(client_id,))
         view = cur.fetchone()
         return view 
 
@@ -109,6 +110,7 @@ class Commandes:
         self.clients_id = clients_id
         self.commandes_id = commandes_id
         self.liste_produits = liste_produits
+    # Crée d'abord l'en-tête de commande afin de réutiliser son identifiant pour chacune de ses lignes.
     def ajouter_en_base(self):      
         cur = self.conn.cursor()
         cur.execute("insert into commandes (date_comm,clients_id) values (?,?);",(self.date_comm,self.clients_id))
@@ -121,7 +123,8 @@ class Commandes:
         cur.execute("insert into details_comm (commandes_id,produits_id,quantite,prix_unitaire) values (?,?,?,?);",(self.commandes_id,produits_id,quantite,prix_unitaire))
         self.conn.commit()
     @staticmethod
-    def afficher(conn,id):
+    # Joint les quatre tables nécessaires pour restituer une commande avec son client et le détail de ses produits.
+    def afficher(conn,commande_id):
         cur = conn.cursor()
         requete = """select cl.nom,cl.prenom,cl.adresse,p.produits_id,p.nom,p.type_prod,c.date_comm,c.commandes_id,d.quantite,d.prix_unitaire
         from clients as cl
@@ -130,19 +133,19 @@ class Commandes:
         join produits as p on p.produits_id = d.produits_id
         where c.commandes_id = ?;
         """
-        cur.execute(requete,(id,))
+        cur.execute(requete,(commande_id,))
         view= cur.fetchall()
         return view,cur
     @staticmethod
-    def modifier(conn, date_comm, clients_id, id):
+    def modifier(conn, date_comm, clients_id, commande_id):
         cur = conn.cursor()
-        cur.execute("update commandes set date_comm = ?, clients_id = ? where commandes_id = ?;", (date_comm, clients_id, id))
+        cur.execute("update commandes set date_comm = ?, clients_id = ? where commandes_id = ?;", (date_comm, clients_id, commande_id))
         conn.commit()   
     @staticmethod
-    def supprimer(conn, id):
+    def supprimer(conn, commande_id):
         cur = conn.cursor()
-        cur.execute("delete from details_comm where commandes_id = ?;", (id,))
-        cur.execute("delete from commandes where commandes_id = ?;", (id,))
+        cur.execute("delete from details_comm where commandes_id = ?;", (commande_id,))
+        cur.execute("delete from commandes where commandes_id = ?;", (commande_id,))
         conn.commit()
 
 
@@ -154,6 +157,7 @@ def liste_produits(conn):
 
 
 
+# Transforme les tuples SQL en dictionnaires prêts pour les templates, avec une image spécifique ou l'image par défaut.
 def enrichir_produits(produits):
     produits_enrichis = []
     for p in produits:
@@ -176,6 +180,7 @@ def liste_commandes(conn):
     cur.execute("select * from commandes")
     view = cur.fetchall()
     return view
+# Récupère une ligne par produit commandé et limite facultativement le résultat à l'historique d'un client.
 def commandes_detaillees(conn, client_id=None):
     cur = conn.cursor()
     requete = """select c.commandes_id, cl.nom, cl.prenom, c.date_comm,
@@ -192,6 +197,7 @@ def commandes_detaillees(conn, client_id=None):
     else:
         cur.execute(requete + "order by c.commandes_id;")
     return cur.fetchall()
+# Regroupe les lignes SQL par commande et construit la structure imbriquée attendue par les pages d'administration et de profil.
 def commandes_groupees(conn,client_id = None):
     commandes = {}
     resultat = commandes_detaillees(conn,client_id)
@@ -216,12 +222,22 @@ def commandes_groupees(conn,client_id = None):
         commandes[id_ligne]['total'] += float(ligne[7]) * float(ligne[6])
     return commandes
 
-def get_stats(conn):
+# Agrège les indicateurs affichés dans le tableau de bord. Les compteurs de clients/produits restent globaux,
+# mais les indicateurs liés aux commandes sont limités aux "plage_jours" derniers jours pour rester légers à charger.
+def get_stats(conn, plage_jours=30):
     cur = conn.cursor()
     nb_clients = cur.execute("SELECT COUNT(*) FROM clients").fetchone()[0]
     nb_produits = cur.execute("SELECT COUNT(*) FROM produits").fetchone()[0]
-    nb_commandes = cur.execute("SELECT COUNT(*) FROM commandes").fetchone()[0]
-    ca_total = cur.execute("SELECT SUM(quantite * prix_unitaire) FROM details_comm").fetchone()[0] or 0
+    nb_commandes = cur.execute(
+        "SELECT COUNT(*) FROM commandes WHERE date_comm >= date('now', ?)",
+        (f"-{plage_jours} days",)
+    ).fetchone()[0]
+    ca_total = cur.execute("""
+        SELECT SUM(d.quantite * d.prix_unitaire)
+        FROM details_comm AS d
+        JOIN commandes AS c ON c.commandes_id = d.commandes_id
+        WHERE c.date_comm >= date('now', ?)
+    """, (f"-{plage_jours} days",)).fetchone()[0] or 0
     return {
         "nb_clients": nb_clients,
         "nb_produits": nb_produits,
@@ -229,39 +245,45 @@ def get_stats(conn):
         "ca_total": ca_total
     }
 
-def produits_les_plus_achetes(conn):
+def produits_les_plus_achetes(conn, plage_jours=30):
     cur = conn.cursor()
     resultat = cur.execute("""
         SELECT p.nom, SUM(d.quantite) as total_vendu
         FROM details_comm d
         JOIN produits p ON p.produits_id = d.produits_id
+        JOIN commandes c ON c.commandes_id = d.commandes_id
+        WHERE c.date_comm >= date('now', ?)
         GROUP BY p.produits_id
         ORDER BY total_vendu DESC
-    """).fetchall()
+    """, (f"-{plage_jours} days",)).fetchall()
     return resultat
 
-def top_5(conn):
+def top_5(conn, plage_jours=30):
     cur = conn.cursor()
     resultat = cur.execute("""
         select cl.nom, cl.prenom, sum(d.quantite * d.prix_unitaire) as montant from clients as cl
         join commandes as c on c.clients_id = cl.clients_id
         join details_comm as d on d.commandes_id = c.commandes_id
+        where c.date_comm >= date('now', ?)
         group by cl.clients_id
         order by  montant desc
         limit 5;                
-        """).fetchall()
+        """, (f"-{plage_jours} days",)).fetchall()
     return resultat
 
-def donnut_CA(conn):
+def donnut_CA(conn, plage_jours=30):
     cur = conn.cursor()
     resultat = cur.execute("""
         select p.type_prod,sum(d.quantite * d.prix_unitaire) as CA from details_comm as d
         join produits as p on p.produits_id = d.produits_id
+        join commandes as c on c.commandes_id = d.commandes_id
+        where c.date_comm >= date('now', ?)
         group by p.type_prod
         order by CA desc;
-                   """).fetchall()
+                   """, (f"-{plage_jours} days",)).fetchall()
     return resultat
 
+# Retourne les produits classés par le score de popularité préalablement calculé dans la table de recommandations.
 def top_k_baseline(conn, k=10):
     cur = conn.cursor()
 
@@ -278,14 +300,12 @@ def top_k_baseline(conn, k=10):
         ORDER BY r.score DESC
         LIMIT ?
     """, (k,))
-
     return cur.fetchall()
 
 
 
 def descriptions_produits(conn):
     cur = conn.cursor()
-
     cur.execute("""
         SELECT produits_id, descrip
         FROM produits

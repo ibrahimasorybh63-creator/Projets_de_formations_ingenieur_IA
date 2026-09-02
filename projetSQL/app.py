@@ -1,23 +1,53 @@
-from flask import Flask, render_template, request ,redirect
+from flask import Flask, render_template, request, redirect
 import sqlite3
 import entite
 from flask import session
 from flask import jsonify
 import random
-from setup.recommendations import content_based
+import os
+from dotenv import load_dotenv
+from setup.recommendations import content_based, collaborative
 from datetime import date
 from setup.recommendations.baseline import recalculer_taux_vente
 from werkzeug.security import generate_password_hash, check_password_hash
 
-ADMIN_EMAIL = "admin@boutique.com"
-ADMIN_MDP_HASH = generate_password_hash("ibra")
+load_dotenv()
+
+ADMIN_EMAIL = os.environ["ADMIN_EMAIL"]
+ADMIN_MDP_HASH = generate_password_hash(os.environ["ADMIN_PASSWORD"])
 app = Flask(__name__)
-app.secret_key = "dev_secret_key_2026"   
+app.secret_key = os.environ["FLASK_SECRET_KEY"]
 
 def get_conn():
     conn = sqlite3.connect("boutique.db")
     conn.execute("PRAGMA foreign_keys = ON;")
     return conn
+
+def id_depuis_requete(source, cle):
+    """Récupère un identifiant entier depuis request.args ou request.form.
+    Renvoie None si absent ou non numérique, plutôt que de lever une exception."""
+    valeur = source.get(cle)
+    if valeur is None:
+        return None
+    try:
+        return int(valeur)
+    except ValueError:
+        return None 
+
+
+def _sauvegarder_client(conn, id_client, form):
+    """Valide l'unicité de l'email et met à jour un client.
+    Renvoie une réponse d'erreur (tuple) en cas d'échec, sinon None."""
+    nom = form["nom"]
+    prenom = form["prenom"]
+    adresse = form["adresse"]
+    email = form["email"]
+    cur = conn.cursor()
+    cur.execute("SELECT clients_id FROM clients WHERE email = ? AND clients_id != ?", (email, id_client))
+    if cur.fetchone():
+        return jsonify({"message": "Cet email existe déjà."}), 400
+    entite.Clients.modifier_client(conn, nom, prenom, adresse, email, id_client)
+    return None
 
 #page de l'admin et ses routes
 @app.route("/admin")
@@ -41,22 +71,24 @@ def ajouter_produit():
         prix = float(request.form["prix"])
         type_prod = request.form["type_prod"]
         prix_promo = request.form.get('prix_promo')
+        description = request.form.get('descrip',None)
         if prix_promo:
             prix_promo = float(prix_promo)
         else:
             prix_promo = None
         conn = get_conn()
-        produit = entite.Produit(conn, nom, prix, type_prod,prix_promo)
+        produit = entite.Produit(conn, nom, prix, type_prod,prix_promo,description)
         produit.ajouter_en_base()
-        liste = entite.liste_produits(conn)
+        liste_produit = entite.liste_produits(conn)
         conn.close()
-        return render_template("/categorie/produits.html", produits=liste)
-    liste = entite.liste_produits(conn)
+        return render_template("/categorie/produits.html", produits=liste_produit)
+    conn = get_conn()
+    liste_produit = entite.liste_produits(conn)
     conn.close()
-    return render_template("/categorie/produits.html", produits=liste)
+    return render_template("/categorie/produits.html", produits=liste_produit)
     
 
-@app.post("/clients/ajouter")
+@app.route("/clients/ajouter",methods = ['POST'])
 def ajouter_client():
     nom = request.form["nom"]
     prenom = request.form["prenom"]
@@ -71,7 +103,7 @@ def ajouter_client():
 def modifier_produit():
     conn = get_conn()
     if request.method == "POST":
-        id = int(request.form["id"])
+        produit_id = int(request.form["id"])
         prix = float(request.form["prix"])
         nom = request.form["nom"]
         type_prod = request.form["type_prod"]
@@ -80,71 +112,73 @@ def modifier_produit():
             prix_promo = float(prix_promo)
         else:
             prix_promo = None
-        entite.Produit.modifier(conn,nom,type_prod,prix,prix_promo,id)
-        liste = entite.liste_produits(conn)
+        descrip = request.form.get('descrip',None)
+        entite.Produit.modifier(conn,nom,type_prod,prix,prix_promo,descrip,produit_id)
+        liste_produit = entite.liste_produits(conn)
         conn.close()
-        return render_template('/categorie/produits.html',produits=liste)
-    id = request.args.get('id')
-    if id is None:
+        return render_template('/categorie/produits.html',produits=liste_produit)
+    produit_id = request.args.get('id')
+    if produit_id is None:
         message = {"message":"identifiant introuvable"}
         return (jsonify(message),404)
-    produit = entite.Produit.recuperer_par_id(conn,id)
+    produit = entite.Produit.recuperer_par_id(conn,produit_id)
     conn.close()
     return render_template('/admin/produits_modifier.html',produit= produit)
 
 @app.route('/produits/supprimer',methods= ['POST'])
 def supprimer_produit():
+    produits_id = id_depuis_requete(request.args, "id")
+    if produits_id is None:
+        return (jsonify({"message": "Identifiant de produit invalide."}), 400)
     conn = get_conn()
-    produits_id = int(request.args.get("id"))
     entite.Produit.supprimer(conn, produits_id)
-    liste = entite.liste_produits(conn)
+    liste_produit = entite.liste_produits(conn)
     conn.close()
-    return render_template("/categorie/produits.html",produits = liste)
+    return render_template("/categorie/produits.html",produits = liste_produit)
 
 @app.route("/clients/modifier", methods=["GET", "POST"])
 def modifier_client():
     conn = get_conn()
     if request.method == "POST":
-        id = int(request.form["clients_id"])
-        nom = request.form["nom"]
-        prenom = request.form["prenom"]
-        adresse = request.form["adresse"]
-        email = request.form["email"]
-        cur = conn.cursor()
-        cur.execute("SELECT clients_id FROM clients WHERE email = ? AND clients_id != ?",(email, id))
-        if cur.fetchone():
-            return jsonify({"message": "Cet email existe déjà."}), 400
-        entite.Clients.modifier_client(conn, nom, prenom, adresse,email, id)
-        liste = entite.liste_clients(conn)
+        client_id = id_depuis_requete(request.form, "clients_id")
+        if client_id is None:
+            return (jsonify({"message": "Identifiant de client invalide."}), 400)
+        erreur = _sauvegarder_client(conn, client_id, request.form)
+        if erreur:
+            return erreur
+        liste_client = entite.liste_clients(conn)
         conn.close()
-        return render_template("/categorie/clients.html", clients = liste)
-    id = int(request.args.get('id'))
-    liste = entite.Clients.recuperer_par_id(conn,id)
+        return render_template("/categorie/clients.html", clients = liste_client)
+    client_id = id_depuis_requete(request.args, 'id')
+    if client_id is None:
+        return (jsonify({"message": "Identifiant de client invalide."}), 400)
+    liste_client = entite.Clients.recuperer_par_id(conn,client_id)
     conn.close()
-    return render_template("/admin/clients_modifier.html", client=liste)
+    return render_template("/admin/clients_modifier.html", client=liste_client)
 
 @app.route("/clients/supprimer", methods=["GET", "POST"])
 def supprimer_client():
     conn = get_conn()
     if request.method == "POST":
-        id = int(request.form["clients_id"])
-        entite.Clients.supprimer(conn, id)
+        client_id = id_depuis_requete(request.form, "clients_id")
+        if client_id is None:
+            return (jsonify({"message": "Identifiant de client invalide."}), 400)
+        entite.Clients.supprimer(conn, client_id)
         conn.close()
         return render_template("/categorie/clients.html")
-    liste = entite.liste_clients(conn)
+    liste_client = entite.liste_clients(conn)
     conn.close()
-    return render_template("/categorie/clients.html", clients=liste)
+    return render_template("/categorie/clients.html", clients=liste_client)
 
-@app.post("/commandes/ajouter")
+@app.route("/commandes/ajouter",methods = ['POST'])
+# Convertit les lignes de formulaire en détails de commande en conservant le prix promotionnel lorsqu'il existe.
 def ajouter_commande():
     clients_id = int(request.form["clients_id"])
     date_comm = request.form["date_comm"]
     produits_ids = request.form.getlist("produits_id[]")
     quantites = request.form.getlist("quantite[]")
-
     conn = get_conn()
     cur = conn.cursor()
-
     liste_produits = []
     for produits_id, quantite in zip(produits_ids, quantites):
         cur.execute("select prix,prix_promo from produits where produits_id = ?;", (produits_id,))
@@ -153,13 +187,13 @@ def ajouter_commande():
         prix_promo = resultat[1]
         prix_final = prix_promo if prix_promo is not None else prix_unitaire
         liste_produits.append((int(produits_id), int(quantite), prix_final))
-
     commande = entite.Commandes(conn, date_comm, clients_id, liste_produits)
     commande.ajouter_en_base()
     conn.close()
     return redirect("/commandes")
 
 @app.route("/commandes/modifier", methods=["GET", "POST"])
+# Reconstruit les lignes d'une commande lors d'une modification afin de recalculer les prix réellement appliqués.
 def modifier_commande():
     conn = get_conn()
     cur = conn.cursor()
@@ -173,24 +207,23 @@ def modifier_commande():
         conn.commit()
         entite.Commandes.modifier(conn, date_comm, clients_id,comm_id)
         liste_produits = []
-        for id, quantite in zip(produits_ids, quantites):
-            cur.execute("select prix,prix_promo from produits where produits_id = ?;", (id,))
+        for identifiant, quantite in zip(produits_ids, quantites):
+            cur.execute("select prix,prix_promo from produits where produits_id = ?;", (identifiant,))
             resultat = cur.fetchone()
             prix_unitaire = resultat[0]
             prix_promo = resultat[1]
             prix_final = prix_promo if prix_promo is not None else prix_unitaire
-            liste_produits.append((int(id), int(quantite), prix_final))
+            liste_produits.append((int(identifiant), int(quantite), prix_final))
         for produit_id, quantite, prix in liste_produits:
             cur.execute("INSERT INTO details_comm(quantite,prix_unitaire,commandes_id,produits_id) values(?,?,?,?);",
             (quantite, prix, comm_id, produit_id)) 
-        liste = entite.commandes_groupees(conn)   
+        liste_commande = entite.commandes_groupees(conn)   
         conn.commit()
         conn.close()
-        return render_template("/categorie/commandes.html",commandes = liste)
-    id_param = request.args.get('id')
-    if id_param is None:
-        return (jsonify({"message": "Identifiant de commande manquant."}), 400)
-    comm_id = int(id_param)
+        return render_template("/categorie/commandes.html",commandes = liste_commande)
+    comm_id = id_depuis_requete(request.args, 'id')
+    if comm_id is None:
+        return (jsonify({"message": "Identifiant de commande invalide."}), 400)
     toutes_comm = entite.commandes_groupees(conn)
     try:
         comm_cible = toutes_comm[comm_id]
@@ -201,8 +234,10 @@ def modifier_commande():
 
 @app.route("/commandes/supprimer", methods=["POST"])
 def supprimer_commande():
+    id_commande = id_depuis_requete(request.args, "id")
+    if id_commande is None:
+        return (jsonify({"message": "Identifiant de commande invalide."}), 400)
     conn = get_conn()
-    id_commande = int(request.args.get("id"))
     entite.Commandes.supprimer(conn, id_commande)
     conn.close()
     return redirect("/commandes")
@@ -213,23 +248,23 @@ def supprimer_commande():
 @app.route("/produits")
 def produits():
     conn = get_conn()
-    liste = entite.liste_produits(conn)
+    liste_produit = entite.liste_produits(conn)
     conn.close()
-    return render_template("/categorie/produits.html", produits=liste)
+    return render_template("/categorie/produits.html", produits=liste_produit)
 
 @app.route("/clients")
 def clients():
     conn = get_conn()
-    liste = entite.liste_clients(conn)
+    liste_client = entite.liste_clients(conn)
     conn.close()
-    return render_template("/categorie/clients.html", clients=liste)
+    return render_template("/categorie/clients.html", clients=liste_client)
 
 @app.route("/commandes")
 def commandes():
     conn = get_conn()
-    liste = entite.commandes_groupees(conn)
+    liste_commande = entite.commandes_groupees(conn)
     conn.close()
-    return render_template("/categorie/commandes.html", commandes=liste)
+    return render_template("/categorie/commandes.html", commandes=liste_commande)
 
 
 #routes utilisées pour la partie shop
@@ -246,10 +281,13 @@ def shop():
 
 
 @app.route('/ajouter_panier', methods=['POST'])
+# Ajoute ou cumule un produit dans le panier de session en mémorisant le prix applicable au moment de l'ajout.
 def ajouter_panier():
     data = request.get_json()
     id_produit = data['id_produit']
     quantite_ajoutee = data['quantite']
+    if not isinstance(quantite_ajoutee, int) or quantite_ajoutee <= 0:
+        return (jsonify({"message": "Quantité invalide."}), 400)
     conn = get_conn() 
     produit = entite.Produit.recuperer_prix_par_id(conn, id_produit)
     if produit is None:
@@ -258,14 +296,15 @@ def ajouter_panier():
             })
         return (message,400)
     else:
+        prix_final = produit[1] if produit[1] is not None else produit[0]
         if 'panier' not in session:
-            session['panier'] = {id_produit: {'quantite': quantite_ajoutee, 'prix': produit[0]}} 
+            session['panier'] = {id_produit: {'quantite': quantite_ajoutee, 'prix': prix_final}} 
         else:
             if id_produit in session['panier']:
                 session['panier'][id_produit]['quantite'] += quantite_ajoutee
                 session.modified = True
             else:
-                session['panier'][id_produit] = {'quantite': quantite_ajoutee, 'prix': produit[0]}
+                session['panier'][id_produit] = {'quantite': quantite_ajoutee, 'prix': prix_final}
                 session.modified = True
     retour = jsonify({
             "message" : "Produit ajouté au panier avec succès",
@@ -276,6 +315,7 @@ def ajouter_panier():
 
 
 @app.route('/shop_vitrine', methods=['GET'])
+# Choisit des recommandations personnalisées après achat, ou le classement global pour un visiteur sans historique.
 def vitrine_produit():
     conn = get_conn()
     cur = conn.cursor()
@@ -292,10 +332,16 @@ def vitrine_produit():
         recommandation_brute = content_based.recommandations_par_historique(
             client_id, conn, similarites, ids, k=8
         )
+        similarites_collab, ids_collab = collaborative.calculer_similarites_collab(conn)
+        recommandation_collab_brute = collaborative.recommandations_collaboratives(
+            client_id, conn, similarites_collab, ids_collab, k=8
+        )
     else:
         recommandation_brute = entite.top_k_baseline(conn, k=8)
+        recommandation_collab_brute = []
 
     recommandation = entite.enrichir_produits(recommandation_brute)
+    recommandation_collab = entite.enrichir_produits(recommandation_collab_brute)
     produits_bruts = entite.liste_produits(conn)
     produits = entite.enrichir_produits(produits_bruts)
     produits = random.sample(produits, min(20, len(produits)))
@@ -304,6 +350,7 @@ def vitrine_produit():
         "shop/shop_produits.html",
         produits=produits,
         recommandation=recommandation,
+        recommandation_collab=recommandation_collab,
         a_des_achats=a_des_achats
     )
 
@@ -334,6 +381,7 @@ def voir_contact():
 
 
 @app.route('/shop_panier', methods=['GET'])
+# Recompose le panier depuis la session, calcule ses sous-totaux et propose des articles similaires au dernier produit ajouté.
 def afficher_panier():
     conn = get_conn()
     cur = conn.cursor()
@@ -396,6 +444,8 @@ def modifier_panier():
     data = request.get_json()
     id_produit = data['id_produit']
     quantite_ajoutee = data['quantite']
+    if not isinstance(quantite_ajoutee, int) or quantite_ajoutee <= 0:
+        return (jsonify({"message": "Quantité invalide."}), 400)
     if id_produit in session['panier']:
         session['panier'][id_produit]['quantite'] = quantite_ajoutee
         session.modified = True
@@ -416,6 +466,7 @@ def modifier_panier():
  
 
 @app.route('/valider_commande',methods=['POST'])
+# Transforme le panier de session en commande et en lignes de détail, puis réinitialise le panier après enregistrement.
 def valider_commande():
     panier = session.get('panier',{})
     if 'id_client' not in session:
@@ -448,28 +499,25 @@ def valider_commande():
 
 
 #routes pour la connexion/inscription du client
-@app.route('/inscription',methods=['POST'])
+@app.route('/inscription',methods=['GET','POST'])
 def inscription():
-    data = request.get_json()
-    conn = get_conn()
-    nom = data.get('nom')
-    prenom = data.get('prenom')
-    email = data.get('email')
-    mdp = data.get('mdp')
-    adresse = data.get('adresse')
-    liste_requise = [nom,prenom,email,mdp]
-    for i in liste_requise:
-        if i is None:
-            return (jsonify({"message": "Champ manquant"}), 400)
-    client_session = entite.Clients(conn,nom,prenom,email,mdp,adresse)
-    message = client_session.ajouter_en_base()
-    conn.close()
-    return message
-
-
-@app.route('/inscription',methods = ['GET'])
-def afficher_inscrip():
-    return render_template('/shop/inscription.html')
+    if request.method == 'POST':
+        data = request.get_json()
+        conn = get_conn()
+        nom = data.get('nom')
+        prenom = data.get('prenom')
+        email = data.get('email')
+        mdp = data.get('mdp')
+        adresse = data.get('adresse')
+        liste_requise = [nom,prenom,email,mdp]
+        for i in liste_requise:
+            if i is None:
+                return (jsonify({"message": "Champ manquant"}), 400)
+        client_session = entite.Clients(conn,nom,prenom,email,mdp,adresse)
+        message = client_session.ajouter_en_base()
+        conn.close()
+        return message
+    return render_template('/shop/inscription.html')    
 
 
 
@@ -487,28 +535,27 @@ def connexion():
     conn.close()
     if code == 200:
         id_client = login["id"]
+        session.pop("admin",None)
         session['id_client'] = id_client
         return (jsonify({"message":"connexion réussie"}),200)
     else:
         return (login,code)   
     
 
-@app.route('/admin_connexion', methods=['POST'])
+@app.route('/admin_connexion', methods=['GET','POST'])
 def admin_connexion():
-    data = request.get_json()
-    email = data.get('email')
-    mdp = data.get('mdp')
-    if email == ADMIN_EMAIL and check_password_hash(ADMIN_MDP_HASH, mdp):
-        session['admin_connecte'] = True
-        return (jsonify({"message": "Connexion admin réussie."}), 200)
-    else:
-        return (jsonify({"message": "Email ou mot de passe incorrect."}), 400)
-    
-
-
-@app.route('/admin_connexion',methods=['GET'])
-def admin_login():
+    if request.method == 'POST':
+        data = request.get_json()
+        email = data.get('email')
+        mdp = data.get('mdp')
+        if email == ADMIN_EMAIL and check_password_hash(ADMIN_MDP_HASH, mdp):
+            session.pop("id_client", None)
+            session['admin_connecte'] = True
+            return (jsonify({"message": "Connexion admin réussie."}), 200)
+        else:
+            return (jsonify({"message": "Email ou mot de passe incorrect."}), 400)
     return render_template('/admin/admin_login.html')
+
 
 
 @app.route('/',methods=['GET'])
@@ -531,10 +578,12 @@ def voir_profil():
 
 
 @app.before_request
+# Protège les routes d'administration en redirigeant toute requête non authentifiée vers la page de connexion admin.
 def verif_admin():
-    liste = ["/admin","/produits","/produits/modifier","/produits/supprimer","/clients","/clients/modifier",
-            "/clients/supprimer","/commandes","/commandes/ajouter","/commandes/modifier","/commandes/supprimer"]
-    for route in liste:
+    liste_route = ["/admin","/produits","/produits/modifier","/produits/supprimer","/clients","/clients/modifier",
+            "/clients/supprimer","/commandes","/commandes/ajouter","/commandes/modifier","/commandes/supprimer",
+            "/produits/ajouter","/clients/ajouter"]
+    for route in liste_route:
         if request.path == route:
             if 'admin_connecte' in session:
                 return None
@@ -547,27 +596,22 @@ def verif_admin():
 def modifier_profil():
     conn = get_conn()
     if request.method == "POST":
-        id = int(session["id_client"])
-        nom = request.form["nom"]
-        prenom = request.form["prenom"]
-        adresse = request.form["adresse"]
-        email = request.form["email"]
-        cur = conn.cursor()
-        cur.execute("SELECT clients_id FROM clients WHERE email = ? AND clients_id != ?",(email, id))
-        if cur.fetchone():
-            return jsonify({"message": "Cet email existe déjà."}), 400
-        entite.Clients.modifier_client(conn, nom, prenom, adresse,email, id)
-        liste = entite.liste_clients(conn)
+        if 'id_client' not in session:
+            return jsonify({"message": "Session expirée, veuillez vous reconnecter."}), 401
+        profil_id = int(session["id_client"])
+        erreur = _sauvegarder_client(conn, profil_id, request.form)
+        if erreur:
+            return erreur
         conn.close()
-        return render_template("/categorie/clients.html", clients = liste)
-    id = int(request.args.get('id'))
-    liste = entite.Clients.recuperer_par_id(conn,id)
-    conn.close()
-    return render_template("/admin/clients_modifier.html", client=liste)
+        return jsonify({"message": "Profil mis à jour."}), 200
+    if 'id_client' not in session:
+        return redirect('/')
+    return jsonify({"connecte": True})
 
 
 
 @app.route('/confirmation_commande',methods = ['GET'])
+# Vérifie que la commande demandée existe et appartient bien au client connecté avant d'afficher sa confirmation.
 def confirm_comm():
     conn = get_conn()
     id_param = request.args.get('id')
@@ -579,11 +623,22 @@ def confirm_comm():
         comm_cible = toutes_comm[comm_id]
     except KeyError:
         return (jsonify({"message": "Commande introuvable."}), 404)
+    if 'id_client' not in session:
+        return redirect('/')
     if comm_cible['client_id'] != session['id_client']:
         message = jsonify({"message":"numero de commande invalide"})
         return(message,400)
     conn.close()
     return render_template("/shop/confirmation_commande.html", commandes=comm_cible, commande_id=comm_id)
+
+
+
+@app.route("/contact", methods=["POST"])
+def envoyer_mail():
+    email = request.form["email"]
+    message = request.form["message"]
+
+    return jsonify({"message": "Message envoyé"})
 
 
 @app.route('/log_out',methods = ['GET'])

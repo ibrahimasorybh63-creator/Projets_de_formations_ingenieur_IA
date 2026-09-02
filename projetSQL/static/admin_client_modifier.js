@@ -7,6 +7,7 @@ function switch_state(to_show, to_hide) {
     elementHide.classList.add("hidden");
     elementShow.classList.remove("hidden");
 }
+// Branche les actions de modification et de suppression après le chargement d'une fiche client ou d'un profil.
 function initialiserGestionClient() {
     const supprimer_client = document.getElementById('sup_client');
     if (supprimer_client) {
@@ -23,12 +24,10 @@ function initialiserGestionClient() {
                     })
                 })
                 .then(response => {
-
                     if (response.ok) {
                         afficherToast("Utilisateur supprimé de la base.");
                         chargerContenu("/clients");
                     }
-
                 });
             });
             negation.addEventListener('click', function() {
@@ -53,6 +52,7 @@ function initialiserGestionClient() {
         })
     }
 }
+// Soumet la modification du profil en arrière-plan puis actualise la page seulement après une mise à jour réussie.
 function interceptFormulaireProfil(formId) {
     const conteneur = document.getElementById(formId);
     if (!conteneur) return;
@@ -73,4 +73,3 @@ function interceptFormulaireProfil(formId) {
         }
     });
 }
-

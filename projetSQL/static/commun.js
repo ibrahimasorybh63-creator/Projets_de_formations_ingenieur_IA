@@ -11,6 +11,7 @@ function afficherToast(message, type = "succes") {
         toast.remove();
     }, 2000);
 }
+// Ajoute au formulaire une ligne produit autonome avec ses champs et son propre bouton de suppression.
 function initAjoutLigneProduit(btnId, conteneurId) {
     const bouton = document.getElementById(btnId);
     const conteneur = document.getElementById(conteneurId);
@@ -41,3 +42,12 @@ function initAjoutLigneProduit(btnId, conteneurId) {
     });
 }
 
+function ajusterEspaceNav() {
+    const nav = document.getElementById('barre_nav');
+    const espace = document.getElementById('espace_nav');
+    if (nav && espace) {
+        espace.style.height = nav.offsetHeight + 'px';
+    }
+}
+window.addEventListener('load', ajusterEspaceNav);
+window.addEventListener('resize', ajusterEspaceNav);

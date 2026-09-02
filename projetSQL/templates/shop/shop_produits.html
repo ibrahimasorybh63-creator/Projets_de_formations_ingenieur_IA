@@ -19,6 +19,20 @@
   </div>
   {% endif %}
 
+  {% if recommandation_collab %}
+  <div class="flex flex-row items-center justify-center text-center">
+    <h1 class="text-4xl text-center font-bold p-5 text-green-600">
+      Les clients ayant des goûts similaires ont aussi acheté
+    </h1>
+  </div>
+  <div
+    class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4"
+  >
+    {% for produit in recommandation_collab %} {{ carte_produit(produit,
+    "bg-gradient-to-t from-white to-green-200") }} {% endfor %}
+  </div>
+  {% endif %}
+
   <h1 class="text-4xl text-center font-bold p-5 m-5">Catalogue des produits</h1>
   <div
     class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4"

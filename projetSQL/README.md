@@ -96,9 +96,9 @@ Le système peut ensuite utiliser l'historique d'achat du client pour rechercher
 
 ### 3. Collaborative filtering
 
-Le filtrage collaboratif constitue une prochaine étape du projet.
+Le filtrage collaboratif a été implémenté afin de personnaliser les recommandations à partir des comportements d’achat des utilisateurs.
 
-Cette approche exploitera les comportements d'achat des différents utilisateurs afin de recommander des produits à partir des comportements d'utilisateurs similaires.
+Cette approche analyse les historiques de commandes pour identifier les utilisateurs ayant des comportements similaires, puis recommande à un utilisateur des produits achetés par ces utilisateurs similaires mais qu’il n’a pas encore achetés.
 
 ## Concepts mis en œuvre
 

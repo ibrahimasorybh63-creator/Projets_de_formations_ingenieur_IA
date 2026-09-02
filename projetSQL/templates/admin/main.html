@@ -182,6 +182,7 @@
           ></div>
           <div id="zone_dashboard">
             <h1 class="text-3xl font-bold m-5 text-center">Tableau de bord</h1>
+            <p class="text-center text-gray-500 -mt-3 mb-5">Commandes, chiffre d'affaires et classements : 30 derniers jours</p>
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8 m-5">
               <div class="bg-white rounded-lg shadow p-4">
                 <p class="text-gray-500 text-sm">Clients</p>
@@ -211,7 +212,7 @@
             <!-- Le graphique -->
             <div class="grid rounded-lg shadow border m-5 bg-white">
               <h2 class="text-xl font-bold mb-4 text-center p-1">
-                Top 5 clients
+                Top 5 clients (30 derniers jours)
               </h2>
               <table class="w-full justify-center items-center text-center m-5">
                 <thead>
@@ -234,14 +235,14 @@
             </div>
             <div class="bg-white rounded-lg shadow p-5">
               <h2 class="text-xl font-bold mb-4 text-center">
-                Chiffre d'affaires par catégorie
+                Chiffre d'affaires par catégorie (30 derniers jours)
               </h2>
               <div class="max-w-xs mx-auto">
                 <canvas id="graphCategories"></canvas>
               </div>
             </div>
             <div class="bg-white rounded-lg shadow p-4">
-              <h2 class="text-xl font-bold mb-4">Produits les plus achetés</h2>
+              <h2 class="text-xl font-bold mb-4">Produits les plus achetés (30 derniers jours)</h2>
               <canvas id="graphProduits"></canvas>
             </div>
           </div>
@@ -256,7 +257,7 @@
                 style="display: none"
               >
                 <div class="p-1">
-                    <button onclick="chargerContenu('/clients')" class="border border-black rounded flex p-1 w-min bg-white">
+                    <button onclick="chargerContenu('/produits')" class="border border-black rounded flex p-1 w-min bg-white">
                         <span>
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 9V5.25A2.25 2.25 0 0 1 10.5 3h6a2.25 2.25 0 0 1 2.25 2.25v13.5A2.25 2.25 0 0 1 16.5 21h-6a2.25 2.25 0 0 1-2.25-2.25V15m-3 0-3-3m0 0 3-3m-3 3H15" />
@@ -274,9 +275,11 @@
                         <label>type de produit <span class="text-red-500 font-bold">*</span>  </label>
                         <input class="w-full border-2 border-black rounded m-1 text-center" name="type_prod"  type="text"  id="type" required>
                         <label>prix <span class="text-red-500 font-bold">*</span> </label>
-                        <input class="w-full border-2 border-black rounded m-1 text-center" min="0" name="prix"  type="number"  id="prix" required>
+                        <input class="w-full border-2 border-black rounded m-1 text-center" min="1" name="prix"  type="number"  id="prix" required>
                         <label>prix_promo (facultatif)</label>
-                        <input class="w-full border-2 border-black rounded m-1 text-center" name="prix_promo" min="0" type="number" id="" placeholder="null">
+                        <input class="w-full border-2 border-black rounded m-1 text-center" name="prix_promo" min="1" type="number" id="" placeholder="null">
+                        <label>description du produit (facultatif)</label>
+                        <input class="w-full border-2 border-black rounded m-1 text-center" name="descrip" min="1" type="text" id="" placeholder="null">
                         <input class="w-full border-2 border-black rounded m-1 bg-blue-500 hover:bg-blue-700" type="submit" value="Ajouter" id="confirm">
                     </form>
                 </div>

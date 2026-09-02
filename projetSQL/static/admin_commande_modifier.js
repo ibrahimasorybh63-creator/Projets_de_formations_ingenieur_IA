@@ -1,3 +1,4 @@
+// Réactive l'ajout et la suppression de lignes, puis l'envoi asynchrone, pour un formulaire de commande chargé dynamiquement.
 function initformcommande() {
     initAjoutLigneProduit("btn_ajouter_ligne_modif", "lignes_produits_modif");
 

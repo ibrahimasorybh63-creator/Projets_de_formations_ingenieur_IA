@@ -3,6 +3,7 @@ from entite import descriptions_produits
 import numpy as np 
 from sklearn.metrics.pairwise import cosine_similarity
 
+# Vectorise les descriptions des produits puis calcule une matrice de proximité cosinus entre chaque paire de produits.
 def calculer_similarites(conn):
     vectorizer = TfidfVectorizer()
     donnees = descriptions_produits(conn)
@@ -13,6 +14,7 @@ def calculer_similarites(conn):
     return similarites,ids
 
 
+# Extrait les identifiants des produits les plus proches du produit courant, sans inclure ce produit lui-même.
 def produits_similaires(produit_id, similarites, ids, k=5):
     index = ids.index(produit_id)
     ligne_sim = similarites[index]
@@ -23,6 +25,7 @@ def produits_similaires(produit_id, similarites, ids, k=5):
     return produits_id
 
 
+# Classe les produits non achetés selon leur meilleure similarité avec l'ensemble de l'historique du client.
 def recommandations_par_historique(client_id, conn, similarites, ids, k=8):
     cur = conn.cursor()
     produits_achetes = cur.execute("""
@@ -31,8 +34,6 @@ def recommandations_par_historique(client_id, conn, similarites, ids, k=8):
         JOIN clients AS cl ON cl.clients_id = c.clients_id
         WHERE cl.clients_id = ?
     """, (client_id,)).fetchall()
-    if produits_achetes == []:
-        return 'fallback'
     positions_achats = [ids.index(p[0]) for p in produits_achetes]
     lignes_achats = similarites[positions_achats]
     sim_max = np.max(lignes_achats, axis=0)

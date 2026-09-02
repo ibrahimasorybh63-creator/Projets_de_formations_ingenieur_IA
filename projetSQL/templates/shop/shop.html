@@ -11,7 +11,8 @@
     <header>
       <!-- Barre de navigation -->
       <div
-        class="flex flex-row bg-white border-b-2 shadow sticky top-0 left-0 w-full z-50"
+        id="barre_nav"
+        class="flex flex-row bg-white border-b-2 shadow fixed top-0 left-0 w-full z-50"
       >
         <div class="w-1/5">
           <img
@@ -24,27 +25,25 @@
         <div class="flex flex-row w-3/5">
           <button
             class="w-1/4 bg-gray-50 h-1/4 hover:text-blue-500 rounded m-10"
-            onclick="(activerModeCatalogue(), afficherTout(), filtre_off())"
+            id="navigation_accueil"
           >
             Accueil
           </button>
           <button
             class="w-1/4 bg-gray-50 hover:text-blue-500 rounded m-10 h-1/4"
-            onclick="(activerModeCatalogue(), cacherTout(), filtre_on())"
+            id="navigation_produits"
           >
             Produits
           </button>
           <button
             class="w-1/4 bg-gray-50 hover:text-blue-500 rounded h-1/4 m-10"
-            onclick="(activerModePromo(), cacherTout(), filtre_on())"
+            id="navigation_promotions"
           >
             Promotions
           </button>
           <button
             class="w-1/4 bg-gray-50 hover:text-blue-500 rounded h-1/4 m-10"
-            onclick="
-              (chargerCont_shop('/shop_contact'), cacherTout(), filtre_off())
-            "
+            id="navigation_contact"
           >
             Contact
           </button>
@@ -52,7 +51,7 @@
         <div class="me-5 flex flex-row w-1/5">
           <button
             class="bg-gray-50 hover:text-blue-500 mt-10 m-5 rounded h-1/4"
-            onclick="afficher_barre()"
+            id="recherche"
             id="recherche"
           >
             <svg
@@ -92,31 +91,35 @@
           </a>
           <a
             href="/shop_panier"
-            class="hover:text-blue-500 rounded bg-gray-50 m-5 mt-5 flex flex-col items-center"
+            class="hover:text-blue-500 rounded bg-gray-50 m-5 flex flex-col items-center"
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke-width="1.5"
-              stroke="currentColor"
-              class="size-6"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.993 1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 0 1-1.12-1.243l1.264-12A1.125 1.125 0 0 1 5.513 7.5h12.974c.576 0 1.059.435 1.119 1.007ZM8.625 10.5a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm7.5 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z"
-              />
-            </svg>
             <span
               id="compteur_panier"
-              class="absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center animate-pulse {% if long_panier == 0 %}hidden{% endif %}"
+              class="relative text-white bg-red-500 text-xs rounded-full w-5 h-5 flex items-center justify-center animate-pulse {% if long_panier == 0 %}hidden{% endif %}"
               >{{ long_panier }}</span
             >
+            <svg
+              class="size-6"
+              aria-hidden="true"
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M5 4h1.5L9 16m0 0h8m-8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm-8.5-3h9.25L19 7H7.312"
+              />
+            </svg>
             Panier
           </a>
         </div>
       </div>
+      <div id="espace_nav"></div>
       <!-- barre de recherche  -->
       <div id="zone_recherche" class="flex flex-wrap hidden gap-10 mt-10">
         <div class="w-1/4"></div>
@@ -280,7 +283,7 @@
           Plus de 100 articles à votre disposition
         </p>
       </div>
-      <div class="flex justify-end" id="zone_filtre" style="display: none">
+      <div class="flex justify-end hidden" id="zone_filtre">
         <select
           name="filtre_categorie"
           id="filtre_categorie"
@@ -305,12 +308,7 @@
         >
           <div
             class="flex flex-col w-1/5 cursor-pointer transition duration-300 hover: transform hover:scale-105"
-            onclick="
-              (activerModeCatalogue(),
-                appliquerFiltres('Alimentaire'),
-                filtre_on(),
-                cacherTout())
-            "
+            data-categorie="Alimentaire"
           >
             <img
               src="{{ url_for('static', filename='img/alimentaire.jpg') }}"
@@ -322,12 +320,7 @@
           </div>
           <div
             class="flex flex-col w-1/5 cursor-pointer transition duration-300 hover: transform hover:scale-105"
-            onclick="
-              (activerModeCatalogue(),
-                appliquerFiltres('Hygiène'),
-                filtre_on(),
-                cacherTout())
-            "
+            data-categorie="Hygiène"
           >
             <img
               src="{{ url_for('static', filename='img/hygiene.jpg') }}"
@@ -339,12 +332,7 @@
           </div>
           <div
             class="flex flex-col w-1/5 cursor-pointer transition duration-300 hover: transform hover:scale-105"
-            onclick="
-              (activerModeCatalogue(),
-                appliquerFiltres('Papeterie'),
-                filtre_on(),
-                cacherTout())
-            "
+            data-categorie="Papeterie"
           >
             <img
               src="{{ url_for('static', filename='img/papeterie.jpg') }}"
@@ -356,12 +344,7 @@
           </div>
           <div
             class="flex flex-col w-1/5 cursor-pointer transition duration-300 hover: transform hover:scale-105"
-            onclick="
-              (activerModeCatalogue(),
-                appliquerFiltres('Électronique'),
-                filtre_on(),
-                cacherTout())
-            "
+            data-categorie="Électronique"
           >
             <img
               src="{{ url_for('static', filename='img/electronique.jpg') }}"
@@ -373,12 +356,7 @@
           </div>
           <div
             class="flex flex-col w-1/5 cursor-pointer transition duration-300 hover: transform hover:scale-105"
-            onclick="
-              (activerModeCatalogue(),
-                appliquerFiltres('Boisson'),
-                filtre_on(),
-                cacherTout())
-            "
+            data-categorie="Boisson"
           >
             <img
               src="{{ url_for('static', filename='img/boisson.jpg') }}"
@@ -398,32 +376,28 @@
       <div class="flex flex-wrap justify-between">
         <div class="flex flex-col gap-2">
           <button
-            onclick="(activerModeCatalogue(), afficherTout(), filtre_off())"
+            data-navigation="accueil"
             class="text-blue-300 hover:text-white text-start"
           >
             Accueil
           </button>
           <button
-            onclick="(activerModeCatalogue(), cacherTout(), filtre_on())"
+            data-navigation="produits"
             class="text-blue-300 hover:text-white text-start"
           >
             Produits
           </button>
           <button
-            onclick="(activerModePromo(), cacherTout(), filtre_on())"
+            data-navigation="promotions"
             class="text-blue-300 hover:text-white text-start"
           >
             Promotions
           </button>
-          <a
-            onclick="
-              (chargerCont_shop('/shop_contact'),
-                cacherTout(),
-                filtre_off(),
-                cacher_barre())
-            "
+          <button
+            type="button"
+            data-navigation="contact"
             class="text-blue-300 hover:text-white text-start cursor-pointer"
-            >Contact</a
+            >Contact</button
           >
         </div>
         <div class="flex flex-col gap-2 text-white">
@@ -444,7 +418,7 @@
   <script src="{{ url_for('static', filename='shop_catalogue.js') }}"></script>
   <script>
     document.addEventListener("DOMContentLoaded", function () {
-      chargerCont_shop("/shop_vitrine");
+      allerAccueil();
     });
   </script>
 </html>

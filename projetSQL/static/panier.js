@@ -30,6 +30,7 @@ function panier_est_vide() {
     return document.querySelectorAll('[id^="zone_commande"]').length === 0;
 };
 
+// Met à jour immédiatement le total et l'affichage local tout en demandant la suppression de l'article au serveur.
 function supprimerDuPanier(id_produit){
     sous_total =  document.getElementById('sous_total' + id_produit).textContent
     total_general = document.getElementById('total_general').textContent
@@ -47,6 +48,7 @@ function supprimerDuPanier(id_produit){
     
 };
 
+// Enregistre la nouvelle quantité puis recalcule le sous-total et le total affichés à partir de la réponse du serveur.
 async function modifierQuantite(id_produit) {
     const input = document.getElementById("nv_quantite_" + id_produit);
     const nouvelleQuantite = parseInt(input.value);
@@ -76,6 +78,7 @@ async function modifierQuantite(id_produit) {
     afficherToast("Quantité mise à jour.", "succes");
 };
 
+// Lance la création de la commande et oriente le client vers la connexion ou la confirmation selon la réponse reçue.
 async function validerCommande() {
     const response = await fetch('/valider_commande',{
         method:"POST",
